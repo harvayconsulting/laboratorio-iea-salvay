@@ -2,33 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getRecesos } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { calculateDays } from '@/lib/dates';
-
-const chartConfig = {
-  mickaela: {
-    label: "Mickaela",
-    theme: {
-      light: "hsl(var(--chart-1))",
-      dark: "hsl(var(--chart-1))"
-    }
-  },
-  sasha: {
-    label: "Sasha",
-    theme: {
-      light: "hsl(var(--chart-2))",
-      dark: "hsl(var(--chart-2))"
-    }
-  },
-  recesos: {
-    label: "Recesos",
-    theme: {
-      light: "var(--color-recesos)",
-      dark: "var(--color-recesos)"
-    }
-  }
-};
 
 export const RecesosChart = () => {
   const { user } = useAuth();
@@ -38,16 +13,16 @@ export const RecesosChart = () => {
   });
 
   const chartData = recesos?.reduce((acc: any[], receso) => {
-    const date = new Date(receso.start_date).toISOString().split('T')[0];
+    const month = new Date(receso.start_date).toLocaleDateString('es-AR', { month: 'short' });
     const days = calculateDays(receso.start_date, receso.end_date);
     const userName = receso.user?.user_name.toLowerCase();
 
-    const existingDate = acc.find(item => item.date === date);
-    if (existingDate) {
-      existingDate[userName] = days;
+    const existingMonth = acc.find(item => item.month === month);
+    if (existingMonth) {
+      existingMonth[userName] = (existingMonth[userName] || 0) + days;
     } else {
       acc.push({
-        date,
+        month,
         [userName]: days,
       });
     }
@@ -60,77 +35,55 @@ export const RecesosChart = () => {
         <CardTitle className="text-base sm:text-lg">Historial de Recesos</CardTitle>
       </CardHeader>
       <CardContent className="p-2 sm:p-4">
-        <ChartContainer config={chartConfig}>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart 
-              data={chartData} 
-              barSize={10}
-              margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={20}
-                tick={{ fontSize: 12 }}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString("es-AR", {
-                    month: "short",
-                    day: "numeric",
-                  });
-                }}
-              />
-              <ChartTooltip
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <ChartTooltipContent
-                        className="w-[150px]"
-                        active={active}
-                        payload={payload}
-                        label={label}
-                        labelFormatter={(value) => {
-                          return new Date(value).toLocaleDateString("es-AR", {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          });
-                        }}
-                      />
-                    );
-                  }
-                  return null;
-                }}
-              />
-              {user?.user_type === 'admin' ? (
-                <>
-                  <Bar 
-                    dataKey="mickaela" 
-                    name="Mickaela"
-                    fill={chartConfig.mickaela.theme.light}
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="sasha" 
-                    name="Sasha"
-                    fill={chartConfig.sasha.theme.light}
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '12px' }} />
-                </>
-              ) : (
-                <Bar 
-                  dataKey="recesos" 
-                  fill={chartConfig.recesos.theme.light}
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 10, right: 10, left: 0, bottom: 20 }}
+          >
+            <XAxis 
+              dataKey="month"
+              tick={{ fontSize: 12 }}
+              interval={0}
+            />
+            <YAxis
+              tick={{ fontSize: 12 }}
+              label={{ 
+                value: 'Días', 
+                angle: -90, 
+                position: 'insideLeft',
+                style: { fontSize: 12 }
+              }}
+            />
+            <Tooltip
+              formatter={(value: number) => [`${value} días`]}
+              labelFormatter={(label) => `Mes: ${label}`}
+            />
+            {user?.user_type === 'admin' ? (
+              <>
+                <Bar
+                  dataKey="mickaela"
+                  name="Mickaela"
+                  fill="hsl(var(--chart-1))"
                   radius={[4, 4, 0, 0]}
                 />
-              )}
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+                <Bar
+                  dataKey="sasha"
+                  name="Sasha"
+                  fill="hsl(var(--chart-2))"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Legend />
+              </>
+            ) : (
+              <Bar
+                dataKey={user?.user_name.toLowerCase()}
+                name="Días de Receso"
+                fill="hsl(var(--chart-1))"
+                radius={[4, 4, 0, 0]}
+              />
+            )}
+          </BarChart>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   );
