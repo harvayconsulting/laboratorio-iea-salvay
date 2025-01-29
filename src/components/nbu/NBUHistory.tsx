@@ -10,14 +10,33 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+
+const PROVIDERS = [
+  { value: 'AVALIAN', label: 'Avalian' },
+  { value: 'APROSS', label: 'Apross' },
+  { value: 'GALENO', label: 'Galeno' },
+  { value: 'OSDE', label: 'OSDE' },
+  { value: 'SWISS_MEDICAL', label: 'Swiss Medical' },
+];
 
 export function NBUHistory() {
+  const [selectedProvider, setSelectedProvider] = useState<string>(PROVIDERS[0].value);
+
   const { data: nbuHistory, isLoading } = useQuery({
-    queryKey: ['nbu-history'],
+    queryKey: ['nbu-history', selectedProvider],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ieasalvay_nbu')
         .select('*')
+        .eq('provider', selectedProvider)
         .order('effective_date', { ascending: false });
       
       if (error) throw error;
@@ -35,6 +54,20 @@ export function NBUHistory() {
         <CardTitle>Histórico NBU</CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="mb-6">
+          <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Seleccionar prestador" />
+            </SelectTrigger>
+            <SelectContent>
+              {PROVIDERS.map((provider) => (
+                <SelectItem key={provider.value} value={provider.value}>
+                  {provider.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
