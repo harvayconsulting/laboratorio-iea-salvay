@@ -7,13 +7,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PROVIDERS } from "./ProviderSelect";
 
 interface NBU {
   id: string;
-  provider: string;
+  id_obrasocial: number;
   value: number;
   effective_date: string;
+  obrasocial: {
+    id: number;
+    nameprovider: string;
+  };
 }
 
 interface NBUTableProps {
@@ -34,7 +37,7 @@ export function NBUTable({ nbuHistory }: NBUTableProps) {
         <TableBody>
           {nbuHistory?.map((nbu) => (
             <TableRow key={nbu.id}>
-              <TableCell>{PROVIDERS.find(p => p.value === nbu.provider)?.label || nbu.provider}</TableCell>
+              <TableCell>{nbu.obrasocial.nameprovider}</TableCell>
               <TableCell>{nbu.value}</TableCell>
               <TableCell>
                 {format(new Date(nbu.effective_date), 'dd/MM/yyyy')}

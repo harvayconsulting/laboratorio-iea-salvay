@@ -12,37 +12,58 @@ export type Database = {
       ieasalvay_nbu: {
         Row: {
           created_at: string | null
-          effective_date: string
+          effective_date: string | null
           id: string
-          provider: Database["public"]["Enums"]["insurance_provider"]
-          user_id: string | null
-          value: number
+          id_obrasocial: number | null
+          value: number | null
         }
         Insert: {
           created_at?: string | null
-          effective_date: string
+          effective_date?: string | null
           id?: string
-          provider: Database["public"]["Enums"]["insurance_provider"]
-          user_id?: string | null
-          value: number
+          id_obrasocial?: number | null
+          value?: number | null
         }
         Update: {
           created_at?: string | null
-          effective_date?: string
+          effective_date?: string | null
           id?: string
-          provider?: Database["public"]["Enums"]["insurance_provider"]
-          user_id?: string | null
-          value?: number
+          id_obrasocial?: number | null
+          value?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "ieasalvay_nbu_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "ieasalvay_nbu_id_obrasocial_fkey"
+            columns: ["id_obrasocial"]
             isOneToOne: false
-            referencedRelation: "ieasalvay_usuarios"
-            referencedColumns: ["user_id"]
+            referencedRelation: "ieasalvay_obrasocial"
+            referencedColumns: ["id"]
           },
         ]
+      }
+      ieasalvay_obrasocial: {
+        Row: {
+          contactprovider: string | null
+          created_at: string | null
+          id: number
+          nameprovider: string | null
+          startdateprovider: string | null
+        }
+        Insert: {
+          contactprovider?: string | null
+          created_at?: string | null
+          id?: number
+          nameprovider?: string | null
+          startdateprovider?: string | null
+        }
+        Update: {
+          contactprovider?: string | null
+          created_at?: string | null
+          id?: number
+          nameprovider?: string | null
+          startdateprovider?: string | null
+        }
+        Relationships: []
       }
       ieasalvay_recesos: {
         Row: {

@@ -19,57 +19,43 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Database } from "@/integrations/supabase/types";
 
-type InsuranceProvider = Database['public']['Enums']['insurance_provider'];
+interface ObraSocial {
+  id: number;
+  nameprovider: string;
+}
 
 const formSchema = z.object({
-  provider: z.custom<InsuranceProvider>(),
+  id_obrasocial: z.string(),
   value: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
     message: "El valor debe ser un número positivo",
   }),
   effective_date: z.string(),
 });
 
-const INSURANCE_PROVIDERS = [
-  'AVALIAN',
-  'APROSS',
-  'CAJA_ABOGADOS',
-  'CAJA_NOTARIAL',
-  'CPCE',
-  'DASPU',
-  'FEDERADA_1',
-  'FEDERADA_2_3_4000',
-  'JERARQUICOS_PMO',
-  'JERARQUICOS_ALTA_FRECUENCIA',
-  'GALENO',
-  'MEDIFE',
-  'MUTUAL_TAXI',
-  'NOBIS',
-  'OMINT',
-  'OSDE',
-  'PAMI_1EROS_6_',
-  'PAMI (7MO_ADELANTE)',
-  'PARTICULARES_BAJA',
-  'PARTICULARES_ALTA',
-  'PREVENCIÓN_A1_A2',
-  'PREVENCIÓN_A3_A6',
-  'SANCOR_500',
-  'SANCOR_1000',
-  'SIPSSA',
-  'SWISS_MEDICAL'
-] as const;
-
 export function NBUForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const { data: providers } = useQuery({
+    queryKey: ['providers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ieasalvay_obrasocial')
+        .select('id, nameprovider')
+        .order('nameprovider');
+      
+      if (error) throw error;
+      return data as ObraSocial[];
+    },
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      provider: "" as InsuranceProvider,
+      id_obrasocial: "",
       value: "",
       effective_date: new Date().toISOString().split('T')[0],
     },
@@ -80,7 +66,7 @@ export function NBUForm() {
       const { data, error } = await supabase
         .from('ieasalvay_nbu')
         .insert({
-          provider: values.provider,
+          id_obrasocial: Number(values.id_obrasocial),
           value: Number(values.value),
           effective_date: values.effective_date,
         })
@@ -96,7 +82,7 @@ export function NBUForm() {
         description: "El valor de NBU ha sido registrado exitosamente.",
       });
       form.reset();
-      queryClient.invalidateQueries({ queryKey: ['nbu'] });
+      queryClient.invalidateQueries({ queryKey: ['nbu-history'] });
     },
     onError: (error) => {
       console.error('Error creating NBU:', error);
@@ -117,7 +103,7 @@ export function NBUForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="provider"
+          name="id_obrasocial"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Prestador</FormLabel>
@@ -128,9 +114,9 @@ export function NBUForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {INSURANCE_PROVIDERS.map((provider) => (
-                    <SelectItem key={provider} value={provider}>
-                      {provider.replace(/_/g, ' ')}
+                  {providers?.map((provider) => (
+                    <SelectItem key={provider.id} value={provider.id.toString()}>
+                      {provider.nameprovider}
                     </SelectItem>
                   ))}
                 </SelectContent>
