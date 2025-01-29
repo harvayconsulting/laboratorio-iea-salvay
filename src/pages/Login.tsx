@@ -8,7 +8,7 @@ const Login = () => {
           <img 
             src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
             alt="Logo IEA Salvay" 
-            className="h-16" 
+            className="h-24" 
           />
           <div className="space-y-2 text-center">
             <h1 className="text-2xl font-bold tracking-tighter">
