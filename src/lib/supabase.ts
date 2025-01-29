@@ -26,13 +26,6 @@ export const getUser = async (username: string, password: string) => {
     .single();
 
   if (error) throw error;
-  
-  // Set the session with the user's ID for RLS policies
-  await supabase.auth.signInWithPassword({
-    email: username,
-    password: password,
-  });
-
   return data as User;
 };
 
@@ -58,20 +51,9 @@ export const getRecesos = async () => {
 
 export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) => {
   console.log('Creating receso with data:', receso);
-  
-  // Get the current session
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) {
-    throw new Error('No authenticated session found');
-  }
-
   const { data, error } = await supabase
     .from('ieasalvay_recesos')
-    .insert([{
-      ...receso,
-      user_id: session.user.id // Use the authenticated user's ID
-    }])
+    .insert([receso])
     .select()
     .single();
 
