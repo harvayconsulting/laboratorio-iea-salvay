@@ -10,14 +10,26 @@ const chartConfig = {
   mickaela: {
     label: "Mickaela",
     color: "hsl(var(--chart-1))",
+    theme: {
+      light: "hsl(var(--chart-1))",
+      dark: "hsl(var(--chart-1))"
+    }
   },
   sasha: {
     label: "Sasha",
     color: "hsl(var(--chart-2))",
+    theme: {
+      light: "hsl(var(--chart-2))",
+      dark: "hsl(var(--chart-2))"
+    }
   },
   recesos: {
     label: "Recesos",
     color: "var(--color-recesos)",
+    theme: {
+      light: "var(--color-recesos)",
+      dark: "var(--color-recesos)"
+    }
   }
 };
 
@@ -75,31 +87,39 @@ export const RecesosChart = () => {
                 }}
               />
               <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    className="w-[150px]"
-                    labelFormatter={(value) => {
-                      return new Date(value).toLocaleDateString("es-AR", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      });
-                    }}
-                  />
-                }
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <ChartTooltipContent
+                        className="w-[150px]"
+                        active={active}
+                        payload={payload}
+                        label={label}
+                        labelFormatter={(value) => {
+                          return new Date(value).toLocaleDateString("es-AR", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          });
+                        }}
+                      />
+                    );
+                  }
+                  return null;
+                }}
               />
               {user?.user_type === 'admin' ? (
                 <>
                   <Bar 
                     dataKey="mickaela" 
                     name="Mickaela"
-                    fill="hsl(var(--chart-1))" 
+                    fill={chartConfig.mickaela.color}
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar 
                     dataKey="sasha" 
                     name="Sasha"
-                    fill="hsl(var(--chart-2))" 
+                    fill={chartConfig.sasha.color}
                     radius={[4, 4, 0, 0]}
                   />
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
@@ -107,7 +127,7 @@ export const RecesosChart = () => {
               ) : (
                 <Bar 
                   dataKey="recesos" 
-                  fill="var(--color-recesos)" 
+                  fill={chartConfig.recesos.color}
                   radius={[4, 4, 0, 0]}
                 />
               )}
