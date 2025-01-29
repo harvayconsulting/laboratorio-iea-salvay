@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 export type UserType = 'admin' | 'bioquimica';
 
 export interface User {
-  id: string;
+  user_id: string;  // Changed from 'id' to match the database schema
   user_name: string;
   user_type: UserType;
 }
