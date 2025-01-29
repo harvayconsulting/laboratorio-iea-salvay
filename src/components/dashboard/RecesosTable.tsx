@@ -54,7 +54,7 @@ export const RecesosTable = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: updateReceso,
+    mutationFn: ({ id, ...updates }) => updateReceso(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recesos'] });
       toast({

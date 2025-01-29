@@ -64,7 +64,7 @@ export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) 
   return data;
 };
 
-export const updateReceso = async (id: string, updates: Partial<Receso>) => {
+export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id'>>) => {
   const { data, error } = await supabase
     .from('ieasalvay_recesos')
     .update(updates)
