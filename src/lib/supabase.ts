@@ -15,7 +15,11 @@ export interface Receso {
   end_date: string;
   comments?: string;
   created_date: string;
-  user?: User;
+  user?: {
+    user_id: string;
+    user_name: string;
+    user_type: UserType;
+  };
 }
 
 export const getUser = async (username: string, password: string) => {
@@ -36,6 +40,7 @@ export const getRecesos = async () => {
     .select(`
       *,
       user:user_id (
+        user_id,
         user_name,
         user_type
       )
@@ -47,7 +52,7 @@ export const getRecesos = async () => {
     console.error('Error fetching recesos:', error);
     throw error;
   }
-  return data;
+  return data as Receso[];
 };
 
 export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) => {
@@ -65,7 +70,7 @@ export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) 
   return data;
 };
 
-export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id' | 'created_date'>>) => {
+export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id' | 'created_date' | 'user'>>) => {
   const { data, error } = await supabase
     .from('ieasalvay_recesos')
     .update(updates)
@@ -74,7 +79,7 @@ export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Receso;
 };
 
 export const deleteReceso = async (id: string) => {
