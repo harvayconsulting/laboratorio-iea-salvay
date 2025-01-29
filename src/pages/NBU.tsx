@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { NBUForm } from '@/components/nbu/NBUForm';
 import { NBUHistory } from '@/components/nbu/NBUHistory';
+import { CurrentNBUTable } from '@/components/nbu/CurrentNBUTable';
 
 const NBU = () => {
   const { user } = useAuth();
@@ -32,6 +33,7 @@ const NBU = () => {
                 <NBUForm />
               </CardContent>
             </Card>
+            <CurrentNBUTable />
             <NBUHistory />
           </main>
         </div>
