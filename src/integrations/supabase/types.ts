@@ -9,6 +9,41 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ieasalvay_nbu: {
+        Row: {
+          created_at: string | null
+          effective_date: string
+          id: string
+          provider: Database["public"]["Enums"]["insurance_provider"]
+          user_id: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string | null
+          effective_date: string
+          id?: string
+          provider: Database["public"]["Enums"]["insurance_provider"]
+          user_id?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string | null
+          effective_date?: string
+          id?: string
+          provider?: Database["public"]["Enums"]["insurance_provider"]
+          user_id?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ieasalvay_nbu_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ieasalvay_usuarios"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       ieasalvay_recesos: {
         Row: {
           comments: string | null
@@ -73,6 +108,33 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      insurance_provider:
+        | "AVALIAN"
+        | "APROSS"
+        | "CAJA_ABOGADOS"
+        | "CAJA_NOTARIAL"
+        | "CPCE"
+        | "DASPU"
+        | "FEDERADA_1"
+        | "FEDERADA_2_3_4000"
+        | "JERARQUICOS_PMO"
+        | "JERARQUICOS_ALTA_FRECUENCIA"
+        | "GALENO"
+        | "MEDIFE"
+        | "MUTUAL_TAXI"
+        | "NOBIS"
+        | "OMINT"
+        | "OSDE"
+        | "PAMI_1EROS_6_"
+        | "PAMI (7MO_ADELANTE)"
+        | "PARTICULARES_BAJA)"
+        | "PARTICULARES_ALTA"
+        | "PREVENCIÓN_A1_A2"
+        | "PREVENCIÓN_A3_A6"
+        | "SANCOR_500"
+        | "SANCOR_1000"
+        | "SIPSSA"
+        | "SWISS_MEDICAL"
       user_type: "admin" | "bioquimica"
     }
     CompositeTypes: {
