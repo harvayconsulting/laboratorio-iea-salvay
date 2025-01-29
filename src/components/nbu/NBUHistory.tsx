@@ -58,7 +58,10 @@ export function NBUHistory() {
       </CardHeader>
       <CardContent>
         <div className="mb-6">
-          <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+          <Select 
+            value={selectedProvider} 
+            onValueChange={(value: InsuranceProvider) => setSelectedProvider(value)}
+          >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Seleccionar prestador" />
             </SelectTrigger>
