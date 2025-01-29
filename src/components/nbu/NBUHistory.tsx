@@ -61,7 +61,7 @@ export function NBUHistory() {
       const { data, error } = await supabase
         .from('ieasalvay_nbu')
         .select('*')
-        .ilike('provider', selectedProvider)
+        .eq('provider', selectedProvider)
         .order('effective_date', { ascending: false });
       
       if (error) {
