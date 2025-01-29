@@ -33,6 +33,14 @@ export const RecesosTable = () => {
         description: 'Receso eliminado correctamente',
       });
     },
+    onError: (error) => {
+      console.error('Error deleting receso:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo eliminar el receso',
+        variant: 'destructive',
+      });
+    },
   });
 
   if (isLoading) return <div>Cargando...</div>;
@@ -45,6 +53,7 @@ export const RecesosTable = () => {
           <TableHead>Fecha Inicio</TableHead>
           <TableHead>Fecha Fin</TableHead>
           <TableHead>Días</TableHead>
+          <TableHead>Comentarios</TableHead>
           <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
@@ -59,6 +68,7 @@ export const RecesosTable = () => {
                 ? calculateDays(receso.start_date, receso.end_date)
                 : '-'}
             </TableCell>
+            <TableCell>{receso.comments || '-'}</TableCell>
             <TableCell className="space-x-2">
               {user?.user_type === 'admin' && (
                 <>
@@ -72,7 +82,11 @@ export const RecesosTable = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => deleteMutation.mutate(receso.id)}
+                    onClick={() => {
+                      if (window.confirm('¿Está seguro de eliminar este receso?')) {
+                        deleteMutation.mutate(receso.id);
+                      }
+                    }}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

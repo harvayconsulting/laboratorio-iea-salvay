@@ -12,16 +12,22 @@ export const Header = () => {
   };
 
   return (
-    <header className="flex justify-between items-center p-4 border-b">
+    <header className="flex flex-col space-y-4 p-4 border-b">
       <div className="flex items-center space-x-4">
-        <h1 className="text-2xl font-bold">Panel de Administración</h1>
-        <span className="text-muted-foreground">
-          Bienvenido, {user?.user_name}
-        </span>
+        <img src="/logo.png" alt="Logo IEA Salvay" className="h-12" />
+        <h2 className="text-xl font-semibold">Laboratorio IEA Salvay</h2>
       </div>
-      <Button variant="outline" onClick={handleLogout}>
-        Cerrar Sesión
-      </Button>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Administración de Recesos</h1>
+        <div className="flex items-center space-x-4">
+          <span className="text-muted-foreground">
+            Bienvenido, {user?.user_name}
+          </span>
+          <Button variant="outline" onClick={handleLogout}>
+            Cerrar Sesión
+          </Button>
+        </div>
+      </div>
     </header>
   );
 };
