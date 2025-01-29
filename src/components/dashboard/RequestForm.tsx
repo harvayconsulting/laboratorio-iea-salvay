@@ -35,7 +35,7 @@ export const RequestForm = () => {
     if (!user) return;
 
     mutation.mutate({
-      user_id: user.user_id,  // Updated from user.id to user.user_id
+      user_id: user.user_id,
       start_date: startDate,
       end_date: endDate,
       comments,
