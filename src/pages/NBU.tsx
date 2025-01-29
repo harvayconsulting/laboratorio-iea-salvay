@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { NBUForm } from '@/components/nbu/NBUForm';
 
 const NBU = () => {
   const { user } = useAuth();
@@ -27,8 +28,7 @@ const NBU = () => {
                 <CardTitle className="text-lg sm:text-xl">Gestión de NBU</CardTitle>
               </CardHeader>
               <CardContent>
-                {/* NBU form will be implemented here */}
-                <p>Formulario de NBU en desarrollo</p>
+                <NBUForm />
               </CardContent>
             </Card>
           </main>
