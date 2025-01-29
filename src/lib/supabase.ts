@@ -34,8 +34,8 @@ export const getUser = async (username: string, password: string) => {
   return data as User;
 };
 
-export const getRecesos = async () => {
-  const { data, error } = await supabase
+export const getRecesos = async (userType?: UserType, userId?: string) => {
+  let query = supabase
     .from('ieasalvay_recesos')
     .select(`
       *,
@@ -47,6 +47,12 @@ export const getRecesos = async () => {
     `)
     .order('created_date', { ascending: false })
     .limit(100);
+
+  if (userType === 'bioquimica' && userId) {
+    query = query.eq('user_id', userId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching recesos:', error);

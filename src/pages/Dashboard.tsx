@@ -5,6 +5,7 @@ import { DashboardStats } from '@/components/dashboard/DashboardStats';
 import { RecesosTable } from '@/components/dashboard/RecesosTable';
 import { RequestForm } from '@/components/dashboard/RequestForm';
 import { useAuth } from '@/lib/auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -19,22 +20,30 @@ const Dashboard = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#FFCCCB]">
-      <div className="max-w-7xl mx-auto p-4">
+    <div className="min-h-screen bg-[#ffebee]">
+      <div className="max-w-[1600px] mx-auto px-[150px] py-4">
         <div className="bg-white rounded-lg shadow-lg">
           <Header />
           <main className="p-6 space-y-6">
             <DashboardStats />
             {user.user_type === 'bioquimica' && (
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold">Solicitar Receso</h2>
-                <RequestForm />
-              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Solicitar Receso</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <RequestForm />
+                </CardContent>
+              </Card>
             )}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Registros de Recesos</h2>
-              <RecesosTable />
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Registros de Recesos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RecesosTable />
+              </CardContent>
+            </Card>
           </main>
         </div>
       </div>
