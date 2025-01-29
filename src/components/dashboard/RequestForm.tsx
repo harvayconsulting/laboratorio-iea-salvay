@@ -7,6 +7,25 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReceso } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 
+const isWeekend = (date: Date) => {
+  const day = date.getDay();
+  return day === 0 || day === 6;
+};
+
+const calculateBusinessDays = (startDate: Date, endDate: Date) => {
+  let count = 0;
+  const current = new Date(startDate);
+  
+  while (current <= endDate) {
+    if (!isWeekend(current)) {
+      count++;
+    }
+    current.setDate(current.getDate() + 1);
+  }
+  
+  return count;
+};
+
 export const RequestForm = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -14,6 +33,32 @@ export const RequestForm = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const validateDates = (start: string, end: string) => {
+    const startDateObj = new Date(start);
+    const endDateObj = new Date(end);
+
+    if (endDateObj < startDateObj) {
+      toast({
+        title: 'Error',
+        description: 'La fecha de fin no puede ser anterior a la fecha de inicio',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    const businessDays = calculateBusinessDays(startDateObj, endDateObj);
+    if (businessDays > 4) {
+      toast({
+        title: 'Error',
+        description: 'El receso no puede exceder los 4 días hábiles',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const mutation = useMutation({
     mutationFn: createReceso,
@@ -48,6 +93,10 @@ export const RequestForm = () => {
       return;
     }
 
+    if (!validateDates(startDate, endDate)) {
+      return;
+    }
+
     mutation.mutate({
       user_id: user.user_id,
       start_date: startDate,
@@ -77,6 +126,7 @@ export const RequestForm = () => {
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
+            min={startDate} // HTML5 validation
           />
         </div>
       </div>

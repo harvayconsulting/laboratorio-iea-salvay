@@ -9,7 +9,7 @@ import { calculateDays } from '@/lib/dates';
 const chartConfig = {
   recesos: {
     label: "Días de Receso",
-    color: "hsl(var(--chart-1))",
+    color: "#ffe6f2", // Light pink color as requested
   },
 };
 
@@ -26,8 +26,8 @@ export const RecesosChart = () => {
   })) || [];
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="h-full">
+      <CardHeader className="bg-[#ffe6f2]">
         <CardTitle>Historial de Recesos</CardTitle>
       </CardHeader>
       <CardContent>
