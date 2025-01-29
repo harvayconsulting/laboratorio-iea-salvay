@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getRecesos, deleteReceso, updateReceso } from '@/lib/supabase';
+import { getRecesos, deleteReceso, updateReceso, type Receso } from '@/lib/supabase';
 import { formatDate, calculateDays } from '@/lib/dates';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/components/ui/use-toast';
@@ -23,11 +23,18 @@ import {
 import { EditForm } from './EditForm';
 import { useState } from 'react';
 
+type UpdateRecesoInput = {
+  id: string;
+  start_date: Date;
+  end_date: Date;
+  comments?: string;
+};
+
 export const RecesosTable = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedReceso, setSelectedReceso] = useState(null);
+  const [selectedReceso, setSelectedReceso] = useState<Receso | null>(null);
 
   const { data: recesos, isLoading } = useQuery({
     queryKey: ['recesos'],
@@ -54,7 +61,12 @@ export const RecesosTable = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...updates }) => updateReceso(id, updates),
+    mutationFn: ({ id, ...updates }: UpdateRecesoInput) => 
+      updateReceso(id, {
+        start_date: updates.start_date.toISOString(),
+        end_date: updates.end_date.toISOString(),
+        comments: updates.comments,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recesos'] });
       toast({
@@ -97,7 +109,7 @@ export const RecesosTable = () => {
       <TableBody>
         {recesos?.map((receso) => (
           <TableRow key={receso.id}>
-            <TableCell>{receso.user.user_name}</TableCell>
+            <TableCell>{receso.user?.user_name}</TableCell>
             <TableCell>{formatDate(receso.start_date)}</TableCell>
             <TableCell>{formatDate(receso.end_date)}</TableCell>
             <TableCell>

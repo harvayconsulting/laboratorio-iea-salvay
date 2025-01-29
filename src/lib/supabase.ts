@@ -15,6 +15,7 @@ export interface Receso {
   end_date: string;
   comments?: string;
   created_date: string;
+  user?: User;
 }
 
 export const getUser = async (username: string, password: string) => {
@@ -64,7 +65,7 @@ export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) 
   return data;
 };
 
-export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id'>>) => {
+export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id' | 'created_date'>>) => {
   const { data, error } = await supabase
     .from('ieasalvay_recesos')
     .update(updates)
