@@ -6,16 +6,31 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import { useMemo } from 'react';
 
+interface UserStats {
+  total: number;
+  taken: number;
+  remaining: number;
+}
+
+interface StatsMap {
+  [key: string]: UserStats;
+}
+
+interface MonthlyData {
+  month: string;
+  [key: string]: string | number;
+}
+
 export const DashboardStats = () => {
   const { data: recesos } = useQuery({
     queryKey: ['recesos'],
     queryFn: getRecesos,
   });
 
-  const stats = useMemo(() => {
+  const stats = useMemo<StatsMap>(() => {
     if (!recesos) return {};
 
-    const userStats = {};
+    const userStats: StatsMap = {};
     const totalDays = 21; // Días totales por usuario
 
     recesos.forEach((receso) => {
@@ -34,15 +49,16 @@ export const DashboardStats = () => {
     return userStats;
   }, [recesos]);
 
-  const chartData = useMemo(() => {
+  const chartData = useMemo<MonthlyData[]>(() => {
     if (!recesos) return [];
 
-    const monthlyData = {};
+    const monthlyData: { [key: string]: { [key: string]: number } } = {};
     
     recesos.forEach((receso) => {
       const startDate = new Date(receso.start_date);
       const month = startDate.toLocaleString('es-AR', { month: 'long' });
       const userName = receso.user?.user_name;
+      if (!userName) return;
 
       if (!monthlyData[month]) {
         monthlyData[month] = {};
