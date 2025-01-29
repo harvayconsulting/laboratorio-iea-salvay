@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 export type UserType = 'admin' | 'bioquimica';
 
 export interface User {
-  user_id: string;  // Changed from 'id' to match the database schema
+  user_id: string;
   user_name: string;
   user_type: UserType;
 }
@@ -42,18 +42,25 @@ export const getRecesos = async () => {
     .order('created_date', { ascending: false })
     .limit(100);
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error fetching recesos:', error);
+    throw error;
+  }
   return data;
 };
 
 export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) => {
+  console.log('Creating receso with data:', receso);
   const { data, error } = await supabase
     .from('ieasalvay_recesos')
     .insert([receso])
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error creating receso:', error);
+    throw error;
+  }
   return data;
 };
 

@@ -6,7 +6,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReceso } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
-import { calculateDays } from '@/lib/dates';
 
 export const RequestForm = () => {
   const [startDate, setStartDate] = useState('');
@@ -28,11 +27,26 @@ export const RequestForm = () => {
       setEndDate('');
       setComments('');
     },
+    onError: (error) => {
+      console.error('Error creating receso:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo crear el receso. Por favor intente nuevamente.',
+        variant: 'destructive',
+      });
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user?.user_id) {
+      toast({
+        title: 'Error',
+        description: 'Usuario no autenticado',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     mutation.mutate({
       user_id: user.user_id,
