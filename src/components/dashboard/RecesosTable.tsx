@@ -106,7 +106,6 @@ export const RecesosTable = () => {
       <TableHeader>
         <TableRow>
           {user?.user_type === 'admin' && <TableHead>Bioquímica</TableHead>}
-          <TableHead>Fecha Creación</TableHead>
           <TableHead>Fecha Inicio</TableHead>
           <TableHead>Fecha Fin</TableHead>
           <TableHead>Días</TableHead>
@@ -122,7 +121,6 @@ export const RecesosTable = () => {
             {user?.user_type === 'admin' && (
               <TableCell>{receso.user?.user_name}</TableCell>
             )}
-            <TableCell>{formatDate(receso.created_date)}</TableCell>
             <TableCell>{formatDate(receso.start_date)}</TableCell>
             <TableCell>{formatDate(receso.end_date)}</TableCell>
             <TableCell>
