@@ -9,15 +9,25 @@ import {
 } from '@/components/ui/table';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getRecesos, deleteReceso } from '@/lib/supabase';
+import { getRecesos, deleteReceso, updateReceso } from '@/lib/supabase';
 import { formatDate, calculateDays } from '@/lib/dates';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { EditForm } from './EditForm';
+import { useState } from 'react';
 
 export const RecesosTable = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedReceso, setSelectedReceso] = useState(null);
 
   const { data: recesos, isLoading } = useQuery({
     queryKey: ['recesos'],
@@ -43,7 +53,34 @@ export const RecesosTable = () => {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: updateReceso,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recesos'] });
+      toast({
+        title: 'Éxito',
+        description: 'Receso actualizado correctamente',
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating receso:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo actualizar el receso',
+        variant: 'destructive',
+      });
+    },
+  });
+
   if (isLoading) return <div>Cargando...</div>;
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+    } catch (error) {
+      console.error('Error in handleDelete:', error);
+    }
+  };
 
   return (
     <Table>
@@ -72,19 +109,32 @@ export const RecesosTable = () => {
             <TableCell className="space-x-2">
               {user?.user_type === 'admin' && (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {/* TODO: Implement edit */}}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setSelectedReceso(receso)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Editar Receso</DialogTitle>
+                      </DialogHeader>
+                      <EditForm
+                        receso={selectedReceso}
+                        onSubmit={(data) => updateMutation.mutate({ id: receso.id, ...data })}
+                      />
+                    </DialogContent>
+                  </Dialog>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => {
                       if (window.confirm('¿Está seguro de eliminar este receso?')) {
-                        deleteMutation.mutate(receso.id);
+                        handleDelete(receso.id);
                       }
                     }}
                   >

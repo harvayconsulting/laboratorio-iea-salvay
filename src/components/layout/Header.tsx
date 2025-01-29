@@ -14,7 +14,7 @@ export const Header = () => {
   return (
     <header className="flex flex-col space-y-4 p-4 border-b">
       <div className="flex items-center space-x-4">
-        <img src="/logo.png" alt="Logo IEA Salvay" className="h-12" />
+        <img src="/lovable-uploads/88c1127a-5326-4614-a154-96c394be0bd3.png" alt="Logo IEA Salvay" className="h-12" />
         <h2 className="text-xl font-semibold">Laboratorio IEA Salvay</h2>
       </div>
       <div className="flex justify-between items-center">
