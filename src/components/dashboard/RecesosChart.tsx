@@ -9,7 +9,6 @@ import { calculateDays } from '@/lib/dates';
 const chartConfig = {
   mickaela: {
     label: "Mickaela",
-    color: "hsl(var(--chart-1))",
     theme: {
       light: "hsl(var(--chart-1))",
       dark: "hsl(var(--chart-1))"
@@ -17,7 +16,6 @@ const chartConfig = {
   },
   sasha: {
     label: "Sasha",
-    color: "hsl(var(--chart-2))",
     theme: {
       light: "hsl(var(--chart-2))",
       dark: "hsl(var(--chart-2))"
@@ -25,7 +23,6 @@ const chartConfig = {
   },
   recesos: {
     label: "Recesos",
-    color: "var(--color-recesos)",
     theme: {
       light: "var(--color-recesos)",
       dark: "var(--color-recesos)"
@@ -113,13 +110,13 @@ export const RecesosChart = () => {
                   <Bar 
                     dataKey="mickaela" 
                     name="Mickaela"
-                    fill={chartConfig.mickaela.color}
+                    fill={chartConfig.mickaela.theme.light}
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar 
                     dataKey="sasha" 
                     name="Sasha"
-                    fill={chartConfig.sasha.color}
+                    fill={chartConfig.sasha.theme.light}
                     radius={[4, 4, 0, 0]}
                   />
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
@@ -127,7 +124,7 @@ export const RecesosChart = () => {
               ) : (
                 <Bar 
                   dataKey="recesos" 
-                  fill={chartConfig.recesos.color}
+                  fill={chartConfig.recesos.theme.light}
                   radius={[4, 4, 0, 0]}
                 />
               )}
