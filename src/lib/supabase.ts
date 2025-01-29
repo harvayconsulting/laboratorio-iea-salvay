@@ -78,7 +78,10 @@ export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error updating receso:', error);
+    throw error;
+  }
   return data as Receso;
 };
 
@@ -88,5 +91,8 @@ export const deleteReceso = async (id: string) => {
     .delete()
     .eq('id', id);
 
-  if (error) throw error;
+  if (error) {
+    console.error('Error deleting receso:', error);
+    throw error;
+  }
 };

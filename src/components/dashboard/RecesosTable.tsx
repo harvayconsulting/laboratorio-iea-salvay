@@ -65,8 +65,7 @@ export const RecesosTable = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: UpdateRecesoInput) => {
-      const { id, ...updates } = data;
+    mutationFn: ({ id, ...updates }: UpdateRecesoInput) => {
       return updateReceso(id, {
         start_date: updates.start_date.toISOString(),
         end_date: updates.end_date.toISOString(),
@@ -138,10 +137,10 @@ export const RecesosTable = () => {
                           <Pencil className="h-4 w-4" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent aria-describedby="edit-form-description">
+                      <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Editar Receso</DialogTitle>
-                          <DialogDescription id="edit-form-description">
+                          <DialogDescription>
                             Modifica los detalles del receso seleccionado
                           </DialogDescription>
                         </DialogHeader>
