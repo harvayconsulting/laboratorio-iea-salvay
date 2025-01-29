@@ -3,13 +3,17 @@ import { getRecesos } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, Legend } from 'recharts';
 import { calculateDays } from '@/lib/dates';
 
 const chartConfig = {
-  recesos: {
-    label: "Días de Receso",
+  mickaela: {
+    label: "Mickaela",
     color: "hsl(var(--chart-1))",
+  },
+  sasha: {
+    label: "Sasha",
+    color: "hsl(var(--chart-2))",
   },
 };
 
@@ -20,10 +24,22 @@ export const RecesosChart = () => {
     queryFn: () => getRecesos(user?.user_type, user?.user_id),
   });
 
-  const chartData = recesos?.map(receso => ({
-    date: new Date(receso.start_date).toISOString().split('T')[0],
-    recesos: calculateDays(receso.start_date, receso.end_date),
-  })) || [];
+  const chartData = recesos?.reduce((acc: any[], receso) => {
+    const date = new Date(receso.start_date).toISOString().split('T')[0];
+    const days = calculateDays(receso.start_date, receso.end_date);
+    const userName = receso.user?.user_name.toLowerCase();
+
+    const existingDate = acc.find(item => item.date === date);
+    if (existingDate) {
+      existingDate[userName] = days;
+    } else {
+      acc.push({
+        date,
+        [userName]: days,
+      });
+    }
+    return acc;
+  }, []) || [];
 
   return (
     <Card className="h-[300px]">
@@ -66,11 +82,29 @@ export const RecesosChart = () => {
                 />
               }
             />
-            <Bar 
-              dataKey="recesos" 
-              fill="var(--color-recesos)" 
-              radius={[4, 4, 0, 0]}
-            />
+            {user?.user_type === 'admin' ? (
+              <>
+                <Bar 
+                  dataKey="mickaela" 
+                  name="Mickaela"
+                  fill="hsl(var(--chart-1))" 
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar 
+                  dataKey="sasha" 
+                  name="Sasha"
+                  fill="hsl(var(--chart-2))" 
+                  radius={[4, 4, 0, 0]}
+                />
+                <Legend />
+              </>
+            ) : (
+              <Bar 
+                dataKey="recesos" 
+                fill="var(--color-recesos)" 
+                radius={[4, 4, 0, 0]}
+              />
+            )}
           </BarChart>
         </ChartContainer>
       </CardContent>

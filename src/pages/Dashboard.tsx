@@ -26,8 +26,9 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-lg">
           <Header />
           <main className="p-6 space-y-6">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid grid-cols-2 gap-4">
               <DashboardStats />
+              {user.user_type === 'admin' && <RecesosChart />}
               {user.user_type === 'bioquimica' && <RecesosChart />}
             </div>
             {user.user_type === 'bioquimica' && (
