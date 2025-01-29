@@ -16,7 +16,7 @@ interface StatsMap {
 export const DashboardStats = () => {
   const { data: recesos } = useQuery({
     queryKey: ['recesos'],
-    queryFn: getRecesos,
+    queryFn: () => getRecesos(),
   });
 
   const calculateUserStats = (userName: string): UserStats => {
