@@ -52,25 +52,25 @@ export const DashboardStats = () => {
       };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-1">
       {Object.entries(stats).map(([name, stat]) => (
-        <Card key={name}>
+        <Card key={name} className="h-[300px]">
           <CardHeader>
-            <CardTitle>{name}</CardTitle>
+            <CardTitle className="text-lg">{name}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Días totales:</span>
-                <span>{stat.total}</span>
+            <div className="space-y-6 mt-4">
+              <div className="flex justify-between items-center">
+                <span className="text-base">Días totales:</span>
+                <span className="text-xl font-semibold">{stat.total}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Días tomados:</span>
-                <span>{stat.taken}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-base">Días tomados:</span>
+                <span className="text-xl font-semibold">{stat.taken}</span>
               </div>
-              <div className="flex justify-between">
-                <span>Días restantes:</span>
-                <span>{stat.remaining}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-base">Días restantes:</span>
+                <span className="text-xl font-semibold">{stat.remaining}</span>
               </div>
             </div>
           </CardContent>

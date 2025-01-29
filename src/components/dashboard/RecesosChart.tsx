@@ -26,13 +26,13 @@ export const RecesosChart = () => {
   })) || [];
 
   return (
-    <Card className="h-full">
+    <Card className="h-[300px]">
       <CardHeader>
-        <CardTitle>Historial de Recesos</CardTitle>
+        <CardTitle className="text-lg">Historial de Recesos</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[200px]">
-          <BarChart data={chartData} barSize={20}>
+          <BarChart data={chartData} barSize={15}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
