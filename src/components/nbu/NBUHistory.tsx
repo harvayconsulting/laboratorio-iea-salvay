@@ -25,8 +25,29 @@ type InsuranceProvider = Database['public']['Enums']['insurance_provider'];
 const PROVIDERS: { value: InsuranceProvider; label: string }[] = [
   { value: 'AVALIAN', label: 'Avalian' },
   { value: 'APROSS', label: 'Apross' },
+  { value: 'CAJA_ABOGADOS', label: 'Caja Abogados' },
+  { value: 'CAJA_NOTARIAL', label: 'Caja Notarial' },
+  { value: 'CPCE', label: 'CPCE' },
+  { value: 'DASPU', label: 'DASPU' },
+  { value: 'FEDERADA_1', label: 'Federada 1' },
+  { value: 'FEDERADA_2_3_4000', label: 'Federada 2/3/4000' },
+  { value: 'JERARQUICOS_PMO', label: 'Jerárquicos PMO' },
+  { value: 'JERARQUICOS_ALTA_FRECUENCIA', label: 'Jerárquicos Alta Frecuencia' },
   { value: 'GALENO', label: 'Galeno' },
+  { value: 'MEDIFE', label: 'Medife' },
+  { value: 'MUTUAL_TAXI', label: 'Mutual Taxi' },
+  { value: 'NOBIS', label: 'Nobis' },
+  { value: 'OMINT', label: 'Omint' },
   { value: 'OSDE', label: 'OSDE' },
+  { value: 'PAMI_1EROS_6_', label: 'PAMI (1eros 6)' },
+  { value: 'PAMI (7MO_ADELANTE)', label: 'PAMI (7mo adelante)' },
+  { value: 'PARTICULARES_BAJA)', label: 'Particulares (baja)' },
+  { value: 'PARTICULARES_ALTA', label: 'Particulares (alta)' },
+  { value: 'PREVENCIÓN_A1_A2', label: 'Prevención A1/A2' },
+  { value: 'PREVENCIÓN_A3_A6', label: 'Prevención A3/A6' },
+  { value: 'SANCOR_500', label: 'Sancor 500' },
+  { value: 'SANCOR_1000', label: 'Sancor 1000' },
+  { value: 'SIPSSA', label: 'SIPSSA' },
   { value: 'SWISS_MEDICAL', label: 'Swiss Medical' },
 ];
 
@@ -36,13 +57,18 @@ export function NBUHistory() {
   const { data: nbuHistory, isLoading } = useQuery({
     queryKey: ['nbu-history', selectedProvider],
     queryFn: async () => {
+      console.log('Fetching NBU history for provider:', selectedProvider);
       const { data, error } = await supabase
         .from('ieasalvay_nbu')
         .select('*')
         .eq('provider', selectedProvider)
         .order('effective_date', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching NBU history:', error);
+        throw error;
+      }
+      console.log('NBU history data:', data);
       return data;
     },
   });
@@ -86,13 +112,20 @@ export function NBUHistory() {
             <TableBody>
               {nbuHistory?.map((nbu) => (
                 <TableRow key={nbu.id}>
-                  <TableCell>{nbu.provider.replace(/_/g, ' ')}</TableCell>
+                  <TableCell>{PROVIDERS.find(p => p.value === nbu.provider)?.label || nbu.provider}</TableCell>
                   <TableCell>{nbu.value}</TableCell>
                   <TableCell>
                     {format(new Date(nbu.effective_date), 'dd/MM/yyyy')}
                   </TableCell>
                 </TableRow>
               ))}
+              {(!nbuHistory || nbuHistory.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center py-4">
+                    No hay datos históricos para este prestador
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
