@@ -21,9 +21,12 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
+
+type InsuranceProvider = Database['public']['Enums']['insurance_provider'];
 
 const formSchema = z.object({
-  provider: z.string(),
+  provider: z.custom<InsuranceProvider>(),
   value: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
     message: "El valor debe ser un número positivo",
   }),
@@ -37,21 +40,21 @@ export function NBUForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      provider: "",
+      provider: "" as InsuranceProvider,
       value: "",
       effective_date: new Date().toISOString().split('T')[0],
     },
   });
 
-  const { mutate: createNBU, isLoading } = useMutation({
+  const { mutate: createNBU, isPending } = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from('ieasalvay_nbu')
-        .insert([{
+        .insert({
           provider: values.provider,
           value: Number(values.value),
           effective_date: values.effective_date,
-        }])
+        })
         .select()
         .single();
 
@@ -132,8 +135,8 @@ export function NBUForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Guardando..." : "Guardar NBU"}
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Guardando..." : "Guardar NBU"}
         </Button>
       </form>
     </Form>
