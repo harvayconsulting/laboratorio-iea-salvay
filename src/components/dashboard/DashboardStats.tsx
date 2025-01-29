@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { getRecesos } from '@/lib/supabase';
 import { calculateDays } from '@/lib/dates';
+import { useAuth } from '@/lib/auth';
 
 interface UserStats {
   total: number;
@@ -14,9 +15,10 @@ interface StatsMap {
 }
 
 export const DashboardStats = () => {
+  const { user } = useAuth();
   const { data: recesos } = useQuery({
-    queryKey: ['recesos'],
-    queryFn: () => getRecesos(),
+    queryKey: ['recesos', user?.user_id],
+    queryFn: () => getRecesos(user?.user_type, user?.user_id),
   });
 
   const calculateUserStats = (userName: string): UserStats => {
@@ -42,10 +44,13 @@ export const DashboardStats = () => {
     };
   };
 
-  const stats: StatsMap = {
-    Mickaela: calculateUserStats('mickaela'),
-    Sasha: calculateUserStats('sasha'),
-  };
+  // Si el usuario es bioquímico, solo mostrar sus estadísticas
+  const stats: StatsMap = user?.user_type === 'bioquimica' 
+    ? { [user.user_name]: calculateUserStats(user.user_name) }
+    : {
+        Mickaela: calculateUserStats('mickaela'),
+        Sasha: calculateUserStats('sasha'),
+      };
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

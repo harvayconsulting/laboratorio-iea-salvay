@@ -99,11 +99,13 @@ export const RecesosTable = () => {
     }
   };
 
+  if (isLoading) return <div>Cargando...</div>;
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Bioquímica</TableHead>
+          {user?.user_type === 'admin' && <TableHead>Bioquímica</TableHead>}
           <TableHead>Fecha Inicio</TableHead>
           <TableHead>Fecha Fin</TableHead>
           <TableHead>Días</TableHead>
@@ -116,7 +118,9 @@ export const RecesosTable = () => {
       <TableBody>
         {recesos?.map((receso) => (
           <TableRow key={receso.id}>
-            <TableCell>{receso.user?.user_name}</TableCell>
+            {user?.user_type === 'admin' && (
+              <TableCell>{receso.user?.user_name}</TableCell>
+            )}
             <TableCell>{formatDate(receso.start_date)}</TableCell>
             <TableCell>{formatDate(receso.end_date)}</TableCell>
             <TableCell>
