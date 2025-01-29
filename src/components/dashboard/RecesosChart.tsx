@@ -15,6 +15,10 @@ const chartConfig = {
     label: "Sasha",
     color: "hsl(var(--chart-2))",
   },
+  recesos: {
+    label: "Recesos",
+    color: "var(--color-recesos)",
+  }
 };
 
 export const RecesosChart = () => {
@@ -47,67 +51,69 @@ export const RecesosChart = () => {
         <CardTitle className="text-base sm:text-lg">Historial de Recesos</CardTitle>
       </CardHeader>
       <CardContent className="p-2 sm:p-4">
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart 
-            data={chartData} 
-            barSize={10}
-            margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
-          >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={20}
-              tick={{ fontSize: 12 }}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("es-AR", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[150px]"
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("es-AR", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    });
-                  }}
-                />
-              }
-            />
-            {user?.user_type === 'admin' ? (
-              <>
-                <Bar 
-                  dataKey="mickaela" 
-                  name="Mickaela"
-                  fill="hsl(var(--chart-1))" 
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar 
-                  dataKey="sasha" 
-                  name="Sasha"
-                  fill="hsl(var(--chart-2))" 
-                  radius={[4, 4, 0, 0]}
-                />
-                <Legend wrapperStyle={{ fontSize: '12px' }} />
-              </>
-            ) : (
-              <Bar 
-                dataKey="recesos" 
-                fill="var(--color-recesos)" 
-                radius={[4, 4, 0, 0]}
+        <ChartContainer config={chartConfig}>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart 
+              data={chartData} 
+              barSize={10}
+              margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+            >
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={20}
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString("es-AR", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                }}
               />
-            )}
-          </BarChart>
-        </ResponsiveContainer>
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    className="w-[150px]"
+                    labelFormatter={(value) => {
+                      return new Date(value).toLocaleDateString("es-AR", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      });
+                    }}
+                  />
+                }
+              />
+              {user?.user_type === 'admin' ? (
+                <>
+                  <Bar 
+                    dataKey="mickaela" 
+                    name="Mickaela"
+                    fill="hsl(var(--chart-1))" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar 
+                    dataKey="sasha" 
+                    name="Sasha"
+                    fill="hsl(var(--chart-2))" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '12px' }} />
+                </>
+              ) : (
+                <Bar 
+                  dataKey="recesos" 
+                  fill="var(--color-recesos)" 
+                  radius={[4, 4, 0, 0]}
+                />
+              )}
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
