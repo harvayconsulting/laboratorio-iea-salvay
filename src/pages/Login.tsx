@@ -5,7 +5,11 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#FFCCCB]">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <div className="flex flex-col items-center space-y-6">
-          <img src="/logo.png" alt="Logo IEA Salvay" className="h-16" />
+          <img 
+            src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
+            alt="Logo IEA Salvay" 
+            className="h-16" 
+          />
           <div className="space-y-2 text-center">
             <h1 className="text-2xl font-bold tracking-tighter">
               Laboratorio IEA Salvay
