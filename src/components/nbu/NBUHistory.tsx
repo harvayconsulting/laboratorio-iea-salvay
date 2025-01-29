@@ -18,8 +18,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { Database } from "@/integrations/supabase/types";
 
-const PROVIDERS = [
+type InsuranceProvider = Database['public']['Enums']['insurance_provider'];
+
+const PROVIDERS: { value: InsuranceProvider; label: string }[] = [
   { value: 'AVALIAN', label: 'Avalian' },
   { value: 'APROSS', label: 'Apross' },
   { value: 'GALENO', label: 'Galeno' },
@@ -28,7 +31,7 @@ const PROVIDERS = [
 ];
 
 export function NBUHistory() {
-  const [selectedProvider, setSelectedProvider] = useState<string>(PROVIDERS[0].value);
+  const [selectedProvider, setSelectedProvider] = useState<InsuranceProvider>(PROVIDERS[0].value);
 
   const { data: nbuHistory, isLoading } = useQuery({
     queryKey: ['nbu-history', selectedProvider],
