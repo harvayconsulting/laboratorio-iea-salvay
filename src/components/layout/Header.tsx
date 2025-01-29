@@ -17,7 +17,7 @@ export const Header = () => {
         <img 
           src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
           alt="Logo IEA Salvay" 
-          className="h-8 sm:h-12 w-auto" 
+          className="h-14 sm:h-20 w-auto" // Increased size by 75%
         />
         <h2 className="text-base sm:text-xl font-semibold">Laboratorio IEA Salvay</h2>
       </div>
