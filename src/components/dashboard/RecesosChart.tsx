@@ -32,14 +32,18 @@ export const RecesosChart = () => {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[200px]">
-          <BarChart data={chartData} barSize={15}>
-            <CartesianGrid vertical={false} />
+          <BarChart 
+            data={chartData} 
+            barSize={10}
+            margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+          >
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              minTickGap={32}
+              minTickGap={20}
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString("es-AR", {
