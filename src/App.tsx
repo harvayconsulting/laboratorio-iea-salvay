@@ -7,6 +7,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import NBU from "./pages/NBU";
+import Menu from "./pages/Menu";
+import Pacientes from "./pages/Pacientes";
 
 const queryClient = new QueryClient();
 
@@ -18,8 +20,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/menu" element={<Menu />} />
           <Route path="/recesos" element={<Dashboard />} />
           <Route path="/nbu" element={<NBU />} />
+          <Route path="/pacientes" element={<Pacientes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

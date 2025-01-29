@@ -1,12 +1,10 @@
-import { Header } from '@/components/layout/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth';
-import { useNavigate, Link } from 'react-router-dom';
 import { useEffect } from 'react';
-import { NBUForm } from '@/components/nbu/NBUForm';
+import { useNavigate, Link } from 'react-router-dom';
+import { Header } from '@/components/layout/Header';
+import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 
-const NBU = () => {
+const Pacientes = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -29,14 +27,6 @@ const NBU = () => {
                 <Link to="/menu">Volver al Menú</Link>
               </Button>
             </div>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Gestión de NBU</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <NBUForm />
-              </CardContent>
-            </Card>
           </main>
         </div>
       </div>
@@ -44,4 +34,4 @@ const NBU = () => {
   );
 };
 
-export default NBU;
+export default Pacientes;

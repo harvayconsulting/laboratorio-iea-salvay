@@ -1,17 +1,19 @@
-import { LoginForm } from '@/components/auth/LoginForm';
-import { useAuth } from '@/lib/auth';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '@/lib/auth';
+import { Button } from '@/components/ui/button';
 
-const Login = () => {
+const Menu = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate('/menu');
+    if (!user) {
+      navigate('/');
     }
   }, [user, navigate]);
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#FFCCCB]">
@@ -27,14 +29,24 @@ const Login = () => {
               Laboratorio IEA Salvay
             </h1>
             <p className="text-sm text-muted-foreground">
-              Inicia sesión para continuar
+              Menú Principal
             </p>
           </div>
-          <LoginForm />
+          <div className="flex flex-col w-full space-y-4">
+            <Button asChild className="w-full">
+              <Link to="/recesos">Administración de Recesos</Link>
+            </Button>
+            <Button asChild className="w-full">
+              <Link to="/nbu">Gestión de NBU</Link>
+            </Button>
+            <Button asChild className="w-full">
+              <Link to="/pacientes">Pacientes</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Menu;
