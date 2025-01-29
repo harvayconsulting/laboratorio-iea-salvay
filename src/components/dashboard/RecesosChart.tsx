@@ -3,7 +3,7 @@ import { getRecesos } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, Legend } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, Legend, ResponsiveContainer } from 'recharts';
 import { calculateDays } from '@/lib/dates';
 
 const chartConfig = {
@@ -43,11 +43,11 @@ export const RecesosChart = () => {
 
   return (
     <Card className="h-[300px]">
-      <CardHeader>
-        <CardTitle className="text-lg">Historial de Recesos</CardTitle>
+      <CardHeader className="p-4">
+        <CardTitle className="text-base sm:text-lg">Historial de Recesos</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[200px]">
+      <CardContent className="p-2 sm:p-4">
+        <ResponsiveContainer width="100%" height={200}>
           <BarChart 
             data={chartData} 
             barSize={10}
@@ -60,6 +60,7 @@ export const RecesosChart = () => {
               axisLine={false}
               tickMargin={8}
               minTickGap={20}
+              tick={{ fontSize: 12 }}
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString("es-AR", {
@@ -96,7 +97,7 @@ export const RecesosChart = () => {
                   fill="hsl(var(--chart-2))" 
                   radius={[4, 4, 0, 0]}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
               </>
             ) : (
               <Bar 
@@ -106,7 +107,7 @@ export const RecesosChart = () => {
               />
             )}
           </BarChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   );

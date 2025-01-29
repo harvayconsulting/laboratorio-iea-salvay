@@ -52,25 +52,25 @@ export const DashboardStats = () => {
       };
 
   return (
-    <div className="grid gap-4 md:grid-cols-1">
+    <div className="grid gap-4">
       {Object.entries(stats).map(([name, stat]) => (
         <Card key={name} className="h-[300px]">
-          <CardHeader>
-            <CardTitle className="text-lg">{name}</CardTitle>
+          <CardHeader className="p-4">
+            <CardTitle className="text-base sm:text-lg">{name}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6 mt-4">
+            <div className="space-y-4 sm:space-y-6 mt-2 sm:mt-4">
               <div className="flex justify-between items-center">
-                <span className="text-base">Días totales:</span>
-                <span className="text-xl font-semibold">{stat.total}</span>
+                <span className="text-sm sm:text-base">Días totales:</span>
+                <span className="text-lg sm:text-xl font-semibold">{stat.total}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base">Días tomados:</span>
-                <span className="text-xl font-semibold">{stat.taken}</span>
+                <span className="text-sm sm:text-base">Días tomados:</span>
+                <span className="text-lg sm:text-xl font-semibold">{stat.taken}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base">Días restantes:</span>
-                <span className="text-xl font-semibold">{stat.remaining}</span>
+                <span className="text-sm sm:text-base">Días restantes:</span>
+                <span className="text-lg sm:text-xl font-semibold">{stat.remaining}</span>
               </div>
             </div>
           </CardContent>
