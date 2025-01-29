@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Database } from "@/integrations/supabase/types";
 
 type InsuranceProvider = Database['public']['Enums']['insurance_provider'];
@@ -54,7 +54,7 @@ const PROVIDERS: { value: InsuranceProvider; label: string }[] = [
 export function NBUHistory() {
   const [selectedProvider, setSelectedProvider] = useState<InsuranceProvider>(PROVIDERS[0].value);
 
-  const { data: nbuHistory, isLoading, error } = useQuery({
+  const { data: nbuHistory, isLoading, error, refetch } = useQuery({
     queryKey: ['nbu-history', selectedProvider],
     queryFn: async () => {
       console.log('Selected provider:', selectedProvider);
@@ -72,10 +72,17 @@ export function NBUHistory() {
       console.log('Raw query response:', data);
       return data;
     },
+    refetchOnWindowFocus: false,
+    enabled: !!selectedProvider,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [selectedProvider, refetch]);
 
   if (error) {
     console.error('Query error:', error);
+    return <div>Error al cargar los datos: {error.message}</div>;
   }
 
   if (isLoading) {
