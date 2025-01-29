@@ -54,10 +54,10 @@ const PROVIDERS: { value: InsuranceProvider; label: string }[] = [
 export function NBUHistory() {
   const [selectedProvider, setSelectedProvider] = useState<InsuranceProvider>(PROVIDERS[0].value);
 
-  const { data: nbuHistory, isLoading } = useQuery({
+  const { data: nbuHistory, isLoading, error } = useQuery({
     queryKey: ['nbu-history', selectedProvider],
     queryFn: async () => {
-      console.log('Fetching NBU history for provider:', selectedProvider);
+      console.log('Selected provider:', selectedProvider);
       const { data, error } = await supabase
         .from('ieasalvay_nbu')
         .select('*')
@@ -68,10 +68,15 @@ export function NBUHistory() {
         console.error('Error fetching NBU history:', error);
         throw error;
       }
-      console.log('NBU history data:', data);
+
+      console.log('Raw query response:', data);
       return data;
     },
   });
+
+  if (error) {
+    console.error('Query error:', error);
+  }
 
   if (isLoading) {
     return <div>Cargando histórico...</div>;
@@ -86,7 +91,10 @@ export function NBUHistory() {
         <div className="mb-6">
           <Select 
             value={selectedProvider} 
-            onValueChange={(value: InsuranceProvider) => setSelectedProvider(value)}
+            onValueChange={(value: InsuranceProvider) => {
+              console.log('Changing provider to:', value);
+              setSelectedProvider(value);
+            }}
           >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Seleccionar prestador" />
