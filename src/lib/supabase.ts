@@ -76,12 +76,17 @@ export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id
     .update(updates)
     .eq('id', id)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('Error updating receso:', error);
     throw error;
   }
+  
+  if (!data) {
+    throw new Error('No se encontró el receso especificado');
+  }
+  
   return data as Receso;
 };
 
