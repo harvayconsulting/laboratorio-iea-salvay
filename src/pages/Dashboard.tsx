@@ -26,19 +26,19 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-lg">
           <Header />
           <main className="p-6 space-y-6">
-            <DashboardStats />
+            <div className="grid gap-4 md:grid-cols-2">
+              <DashboardStats />
+              {user.user_type === 'bioquimica' && <RecesosChart />}
+            </div>
             {user.user_type === 'bioquimica' && (
-              <>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Solicitar Receso</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <RequestForm />
-                  </CardContent>
-                </Card>
-                <RecesosChart />
-              </>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Solicitar Receso</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <RequestForm />
+                </CardContent>
+              </Card>
             )}
             <Card>
               <CardHeader>

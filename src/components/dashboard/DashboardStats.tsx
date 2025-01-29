@@ -44,12 +44,11 @@ export const DashboardStats = () => {
     };
   };
 
-  // Si el usuario es bioquímico, solo mostrar sus estadísticas
   const stats: StatsMap = user?.user_type === 'bioquimica' 
-    ? { [user.user_name]: calculateUserStats(user.user_name) }
+    ? { [`Métricas Receso - ${user.user_name}`]: calculateUserStats(user.user_name) }
     : {
-        Mickaela: calculateUserStats('mickaela'),
-        Sasha: calculateUserStats('sasha'),
+        'Métricas Receso - Mickaela': calculateUserStats('mickaela'),
+        'Métricas Receso - Sasha': calculateUserStats('sasha'),
       };
 
   return (

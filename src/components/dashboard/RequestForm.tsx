@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReceso } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
+import { differenceInBusinessDays, isBefore, parseISO } from 'date-fns';
 
 export const RequestForm = () => {
   const [startDate, setStartDate] = useState('');
@@ -14,6 +15,24 @@ export const RequestForm = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const validateDates = (start: string, end: string): string | null => {
+    if (!start || !end) return null;
+    
+    const startDate = parseISO(start);
+    const endDate = parseISO(end);
+    
+    if (isBefore(endDate, startDate)) {
+      return 'La fecha de fin no puede ser anterior a la fecha de inicio';
+    }
+    
+    const businessDays = differenceInBusinessDays(endDate, startDate) + 1;
+    if (businessDays > 4) {
+      return 'El receso no puede exceder los 4 días hábiles';
+    }
+    
+    return null;
+  };
 
   const mutation = useMutation({
     mutationFn: createReceso,
@@ -43,6 +62,16 @@ export const RequestForm = () => {
       toast({
         title: 'Error',
         description: 'Usuario no autenticado',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const validationError = validateDates(startDate, endDate);
+    if (validationError) {
+      toast({
+        title: 'Error',
+        description: validationError,
         variant: 'destructive',
       });
       return;
