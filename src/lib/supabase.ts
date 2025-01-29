@@ -59,15 +59,39 @@ export const createReceso = async (receso: Omit<Receso, 'id' | 'created_date'>) 
   console.log('Creating receso with data:', receso);
   const { data, error } = await supabase
     .from('ieasalvay_recesos')
-    .insert([receso])
-    .select()
-    .single();
+    .insert([receso]);
 
   if (error) {
     console.error('Error creating receso:', error);
     throw error;
   }
-  return data;
+
+  // Fetch the created record to return it with all its data
+  const { data: createdReceso, error: fetchError } = await supabase
+    .from('ieasalvay_recesos')
+    .select(`
+      *,
+      user:user_id (
+        user_id,
+        user_name,
+        user_type
+      )
+    `)
+    .eq('user_id', receso.user_id)
+    .order('created_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (fetchError) {
+    console.error('Error fetching created receso:', fetchError);
+    throw fetchError;
+  }
+
+  if (!createdReceso) {
+    throw new Error('No se pudo crear el receso');
+  }
+
+  return createdReceso;
 };
 
 export const updateReceso = async (id: string, updates: Partial<Omit<Receso, 'id' | 'created_date' | 'user'>>) => {
