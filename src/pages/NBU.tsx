@@ -1,10 +1,10 @@
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/lib/auth';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { NBUForm } from '@/components/nbu/NBUForm';
-import { Button } from '@/components/ui/button';
+import { NBUHistory } from '@/components/nbu/NBUHistory';
 
 const NBU = () => {
   const { user } = useAuth();
@@ -24,11 +24,6 @@ const NBU = () => {
         <div className="bg-white rounded-lg shadow-lg">
           <Header />
           <main className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-            <div className="flex justify-end">
-              <Button asChild variant="outline">
-                <Link to="/menu">Volver al Menú</Link>
-              </Button>
-            </div>
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg sm:text-xl">Gestión de NBU</CardTitle>
@@ -37,6 +32,7 @@ const NBU = () => {
                 <NBUForm />
               </CardContent>
             </Card>
+            <NBUHistory />
           </main>
         </div>
       </div>

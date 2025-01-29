@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const Header = () => {
   const { user, setUser } = useAuth();
@@ -17,16 +17,19 @@ export const Header = () => {
         <img 
           src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
           alt="Logo IEA Salvay" 
-          className="h-14 sm:h-20 w-auto" // Increased size by 75%
+          className="h-14 sm:h-20 w-auto"
         />
         <h2 className="text-base sm:text-xl font-semibold">Laboratorio IEA Salvay</h2>
       </div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
-        <h1 className="text-xl sm:text-2xl font-bold">Administración de Recesos</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">Gestión de NBU</h1>
         <div className="flex items-center justify-between sm:space-x-4">
           <span className="text-sm sm:text-base text-muted-foreground">
             Bienvenido, {user?.user_name}
           </span>
+          <Button asChild variant="outline" size="sm" className="ml-2">
+            <Link to="/menu">Volver al Menú</Link>
+          </Button>
           <Button variant="outline" size="sm" className="ml-2" onClick={handleLogout}>
             Cerrar Sesión
           </Button>

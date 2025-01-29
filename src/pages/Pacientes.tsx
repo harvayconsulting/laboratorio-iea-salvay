@@ -22,6 +22,7 @@ const Pacientes = () => {
         <div className="bg-white rounded-lg shadow-lg">
           <Header />
           <main className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <h1 className="text-2xl font-bold">Pacientes</h1>
             <div className="flex justify-end">
               <Button asChild variant="outline">
                 <Link to="/menu">Volver al Menú</Link>

@@ -33,6 +33,35 @@ const formSchema = z.object({
   effective_date: z.string(),
 });
 
+const INSURANCE_PROVIDERS = [
+  'AVALIAN',
+  'APROSS',
+  'CAJA_ABOGADOS',
+  'CAJA_NOTARIAL',
+  'CPCE',
+  'DASPU',
+  'FEDERADA_1',
+  'FEDERADA_2_3_4000',
+  'JERARQUICOS_PMO',
+  'JERARQUICOS_ALTA_FRECUENCIA',
+  'GALENO',
+  'MEDIFE',
+  'MUTUAL_TAXI',
+  'NOBIS',
+  'OMINT',
+  'OSDE',
+  'PAMI_1EROS_6_',
+  'PAMI (7MO_ADELANTE)',
+  'PARTICULARES_BAJA',
+  'PARTICULARES_ALTA',
+  'PREVENCIÓN_A1_A2',
+  'PREVENCIÓN_A3_A6',
+  'SANCOR_500',
+  'SANCOR_1000',
+  'SIPSSA',
+  'SWISS_MEDICAL'
+] as const;
+
 export function NBUForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -99,10 +128,11 @@ export function NBUForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="OSDE">OSDE</SelectItem>
-                  <SelectItem value="SWISS_MEDICAL">Swiss Medical</SelectItem>
-                  <SelectItem value="GALENO">Galeno</SelectItem>
-                  <SelectItem value="MEDIFE">Medifé</SelectItem>
+                  {INSURANCE_PROVIDERS.map((provider) => (
+                    <SelectItem key={provider} value={provider}>
+                      {provider.replace(/_/g, ' ')}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
