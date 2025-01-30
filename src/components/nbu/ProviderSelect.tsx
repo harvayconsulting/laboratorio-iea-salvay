@@ -25,12 +25,12 @@ export function ProviderSelect({ providers, selectedProvider, onProviderChange }
       <Select 
         value={selectedProvider?.toString()} 
         onValueChange={(value) => {
-          console.log('Changing provider to:', value);
+          console.log('Changing obra social to:', value);
           onProviderChange(Number(value));
         }}
       >
         <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Seleccionar prestador" />
+          <SelectValue placeholder="Seleccionar obra social" />
         </SelectTrigger>
         <SelectContent>
           {providers.map((provider) => (

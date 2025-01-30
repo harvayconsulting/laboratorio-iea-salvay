@@ -39,8 +39,8 @@ export function NBUForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: providers } = useQuery({
-    queryKey: ['providers'],
+  const { data: obrasSociales } = useQuery({
+    queryKey: ['obras-sociales'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ieasalvay_obrasocial')
@@ -83,6 +83,7 @@ export function NBUForm() {
       });
       form.reset();
       queryClient.invalidateQueries({ queryKey: ['nbu-history'] });
+      queryClient.invalidateQueries({ queryKey: ['current-nbus'] });
     },
     onError: (error) => {
       console.error('Error creating NBU:', error);
@@ -106,17 +107,17 @@ export function NBUForm() {
           name="id_obrasocial"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Prestador</FormLabel>
+              <FormLabel>Obra Social</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccione un prestador" />
+                    <SelectValue placeholder="Seleccione una obra social" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {providers?.map((provider) => (
-                    <SelectItem key={provider.id} value={provider.id.toString()}>
-                      {provider.nameprovider}
+                  {obrasSociales?.map((obraSocial) => (
+                    <SelectItem key={obraSocial.id} value={obraSocial.id.toString()}>
+                      {obraSocial.nameprovider}
                     </SelectItem>
                   ))}
                 </SelectContent>

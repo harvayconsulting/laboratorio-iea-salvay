@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ieasalvay_conversion: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          original_filename: string
+          records_count: number
+          status: string
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          original_filename: string
+          records_count: number
+          status?: string
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          original_filename?: string
+          records_count?: number
+          status?: string
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ieasalvay_conversion_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ieasalvay_usuarios"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       ieasalvay_nbu: {
         Row: {
           created_at: string | null
