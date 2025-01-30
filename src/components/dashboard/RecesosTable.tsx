@@ -1,28 +1,11 @@
-import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Table, TableBody } from '@/components/ui/table';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getRecesos, deleteReceso, updateReceso, type Receso } from '@/lib/supabase';
-import { formatDate, calculateDays } from '@/lib/dates';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { EditForm } from './EditForm';
 import { useState } from 'react';
+import { RecesosTableHeader } from './TableHeader';
+import { RecesoRow } from './TableRow';
 
 type UpdateRecesoInput = {
   id: string;
@@ -89,8 +72,6 @@ export const RecesosTable = () => {
     },
   });
 
-  if (isLoading) return <div>Cargando...</div>;
-
   const handleDelete = async (id: string) => {
     try {
       await deleteMutation.mutateAsync(id);
@@ -103,97 +84,20 @@ export const RecesosTable = () => {
 
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          {user?.user_type === 'admin' && <TableHead>Bioquímica</TableHead>}
-          <TableHead>Fecha Inicio</TableHead>
-          <TableHead>Fecha Fin</TableHead>
-          <TableHead>Días</TableHead>
-          <TableHead>Comentarios</TableHead>
-          {user?.user_type === 'admin' && (
-            <TableHead>Acciones</TableHead>
-          )}
-        </TableRow>
-      </TableHeader>
+      <RecesosTableHeader isAdmin={user?.user_type === 'admin'} />
       <TableBody>
         {recesos?.map((receso) => (
-          <TableRow key={receso.id}>
-            {user?.user_type === 'admin' && (
-              <TableCell>{receso.user?.user_name}</TableCell>
-            )}
-            <TableCell>{formatDate(receso.start_date)}</TableCell>
-            <TableCell>{formatDate(receso.end_date)}</TableCell>
-            <TableCell>
-              {receso.start_date && receso.end_date
-                ? calculateDays(receso.start_date, receso.end_date)
-                : '-'}
-            </TableCell>
-            <TableCell>{receso.comments || '-'}</TableCell>
-            {user?.user_type === 'admin' && (
-              <TableCell className="space-x-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSelectedReceso(receso)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Editar Receso</DialogTitle>
-                      <DialogDescription>
-                        Modifica los detalles del receso seleccionado
-                      </DialogDescription>
-                    </DialogHeader>
-                    <EditForm
-                      receso={selectedReceso}
-                      onSubmit={(data) => updateMutation.mutate({ id: receso.id, ...data })}
-                    />
-                  </DialogContent>
-                </Dialog>
-                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setRecesoToDelete(receso.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Confirmar Eliminación</DialogTitle>
-                      <DialogDescription>
-                        ¿Está seguro de que desea eliminar este receso?
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsDeleteDialogOpen(false)}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={() => {
-                          if (recesoToDelete) {
-                            handleDelete(recesoToDelete);
-                          }
-                        }}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </TableCell>
-            )}
-          </TableRow>
+          <RecesoRow
+            key={receso.id}
+            receso={receso}
+            isAdmin={user?.user_type === 'admin'}
+            onEdit={(data) => updateMutation.mutate({ id: receso.id, ...data })}
+            onDelete={handleDelete}
+            setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+            setRecesoToDelete={setRecesoToDelete}
+            setSelectedReceso={setSelectedReceso}
+            isDeleteDialogOpen={isDeleteDialogOpen}
+          />
         ))}
       </TableBody>
     </Table>

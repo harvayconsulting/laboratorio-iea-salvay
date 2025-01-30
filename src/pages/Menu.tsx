@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import { CalendarDays, Activity, Users } from 'lucide-react';
 
 const Menu = () => {
   const { user } = useAuth();
@@ -32,15 +33,24 @@ const Menu = () => {
               Menú Principal
             </p>
           </div>
-          <div className="flex flex-col w-full space-y-4">
-            <Button asChild className="w-full">
-              <Link to="/recesos">Administración de Recesos</Link>
+          <div className="flex flex-col items-center w-full space-y-4">
+            <Button asChild className="w-48">
+              <Link to="/recesos" className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4" />
+                Recesos
+              </Link>
             </Button>
-            <Button asChild className="w-full">
-              <Link to="/nbu">Gestión de NBU</Link>
+            <Button asChild className="w-48">
+              <Link to="/nbu" className="flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                NBU
+              </Link>
             </Button>
-            <Button asChild className="w-full">
-              <Link to="/pacientes">Pacientes</Link>
+            <Button asChild className="w-48">
+              <Link to="/pacientes" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Pacientes
+              </Link>
             </Button>
           </div>
         </div>
