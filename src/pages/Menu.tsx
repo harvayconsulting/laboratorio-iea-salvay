@@ -26,12 +26,12 @@ const Menu = () => {
             className="h-24" 
           />
           <div className="space-y-2 text-center">
+          <p className="text-sm text-muted-foreground">
+              Sistema para la Administración del
+            </p>
             <h1 className="text-2xl font-bold tracking-tighter">
               Laboratorio IEA Salvay
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Menú Principal
-            </p>
           </div>
           <div className="flex flex-col items-center w-full space-y-4">
             <Button asChild className="w-48">
