@@ -11,34 +11,34 @@ export type Database = {
     Tables: {
       error_logs: {
         Row: {
+          action: string | null
+          component: string | null
+          created_at: string | null
           id: string
           message: string
-          stack?: string | null
+          stack: string | null
           timestamp: string
-          user_id?: string | null
-          component?: string | null
-          action?: string | null
-          created_at?: string | null
+          user_id: string | null
         }
         Insert: {
+          action?: string | null
+          component?: string | null
+          created_at?: string | null
           id?: string
           message: string
           stack?: string | null
           timestamp: string
           user_id?: string | null
-          component?: string | null
-          action?: string | null
-          created_at?: string | null
         }
         Update: {
+          action?: string | null
+          component?: string | null
+          created_at?: string | null
           id?: string
           message?: string
           stack?: string | null
           timestamp?: string
           user_id?: string | null
-          component?: string | null
-          action?: string | null
-          created_at?: string | null
         }
         Relationships: [
           {
@@ -47,7 +47,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ieasalvay_usuarios"
             referencedColumns: ["user_id"]
-          }
+          },
         ]
       }
       ieasalvay_capacitaciones: {
@@ -268,6 +268,33 @@ export type Database = {
     }
     Enums: {
       capacitacion_estado: "Concluido" | "En curso" | "Pendiente" | "Cancelado"
+      insurance_provider:
+        | "AVALIAN"
+        | "APROSS"
+        | "CAJA_ABOGADOS"
+        | "CAJA_NOTARIAL"
+        | "CPCE"
+        | "DASPU"
+        | "FEDERADA_1"
+        | "FEDERADA_2_3_4000"
+        | "JERARQUICOS_PMO"
+        | "JERARQUICOS_ALTA_FRECUENCIA"
+        | "GALENO"
+        | "MEDIFE"
+        | "MUTUAL_TAXI"
+        | "NOBIS"
+        | "OMINT"
+        | "OSDE"
+        | "PAMI_1EROS_6"
+        | "PAMI_(7MO_ADELANTE)"
+        | "PARTICULARES_BAJA"
+        | "PARTICULARES_ALTA"
+        | "PREVENCIÓN_A1_A2"
+        | "PREVENCIÓN_A3_A6"
+        | "SANCOR_500"
+        | "SANCOR_1000"
+        | "SIPSSA"
+        | "SWISS_MEDICAL"
       user_type: "admin" | "bioquimica"
     }
     CompositeTypes: {
