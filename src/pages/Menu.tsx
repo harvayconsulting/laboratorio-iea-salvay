@@ -33,7 +33,6 @@ const Menu = () => {
               Laboratorio IEA Salvay
             </h1>
           </div>
-          </br>
           <div className="grid grid-cols-2 gap-x-2 gap-y-2 mt-6">
             {/* Column 1 */}
             <div className="flex flex-col space-y-2">
@@ -74,7 +73,6 @@ const Menu = () => {
                 </Link>
               </Button>
             </div>
-            </br>
             {/* Column 2 */}
             <div className="flex flex-col space-y-2">
               <Button asChild variant="default" className="w-48">
