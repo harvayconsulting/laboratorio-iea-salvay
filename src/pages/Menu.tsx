@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays } from 'lucide-react';
@@ -77,15 +77,10 @@ const Menu = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen flex bg-[#FFCCCB]">
+    <div className="min-h-screen flex bg-white">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <img 
-              src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
-              alt="Logo IEA Salvay" 
-              className="h-36 w-auto mx-auto mb-8"
-            />
             <div className="flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
@@ -95,14 +90,19 @@ const Menu = () => {
         </SidebarBody>
       </Sidebar>
       <main className="flex-1 p-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <p className="text-[1.1rem] text-muted-foreground">
               Sistema para la Administración del
             </p>
-            <h1 className="text-2xl font-bold tracking-tighter">
+            <h1 className="text-2xl font-bold tracking-tighter mb-8">
               Laboratorio IEA Salvay
             </h1>
+            <img 
+              src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
+              alt="Logo IEA Salvay" 
+              className="h-36 w-auto mx-auto"
+            />
           </div>
         </div>
       </main>
