@@ -12,6 +12,7 @@ import { DateFields } from "./form/DateFields";
 import { NumericFields } from "./form/NumericFields";
 import { StatusField } from "./form/StatusField";
 import { capacitacionFormSchema, type CapacitacionFormValues } from "./types";
+import { logError } from "@/services/errorLogging";
 
 export function CapacitacionForm() {
   const { toast } = useToast();
@@ -61,7 +62,11 @@ export function CapacitacionForm() {
         .maybeSingle();
 
       if (error) {
-        console.error("Supabase error:", error);
+        await logError(error, {
+          userId: user?.user_id,
+          component: 'CapacitacionForm',
+          action: 'createCapacitacion'
+        });
         throw new Error(error.message);
       }
 
@@ -75,8 +80,13 @@ export function CapacitacionForm() {
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["capacitaciones"] });
     },
-    onError: (error: Error) => {
+    onError: async (error: Error) => {
       console.error("Error creating capacitacion:", error);
+      await logError(error, {
+        userId: user?.user_id,
+        component: 'CapacitacionForm',
+        action: 'createCapacitacion'
+      });
       toast({
         title: "Error",
         description: error.message,
