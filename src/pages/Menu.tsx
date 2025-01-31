@@ -5,6 +5,7 @@ import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Mega
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 const Menu = () => {
   const { user, setUser } = useAuth();
@@ -87,10 +88,28 @@ const Menu = () => {
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="flex flex-col justify-between h-full">
           <div className="flex flex-col flex-1">
-            <div className="px-4 py-3 text-sm text-neutral-700">
-              Bienvenido, {user?.user_name}
+            <div className="flex flex-col items-center mb-4">
+              <motion.img 
+                src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png"
+                alt="Logo IEA Salvay"
+                className="w-6 h-6 object-contain mb-4"
+                animate={{
+                  width: open ? '48px' : '24px',
+                  height: open ? '48px' : '24px',
+                }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.div 
+                className="px-4 py-3 text-sm text-neutral-700"
+                animate={{
+                  display: open ? 'block' : 'none',
+                  opacity: open ? 1 : 0,
+                }}
+              >
+                Bienvenido, {user?.user_name}
+              </motion.div>
             </div>
-            <div className="flex flex-col gap-2 px-2">
+            <div className="flex flex-col gap-2 px-2 mt-8">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
@@ -103,7 +122,14 @@ const Menu = () => {
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-2" />
-              Cerrar Sesión
+              <motion.span
+                animate={{
+                  display: open ? 'inline-block' : 'none',
+                  opacity: open ? 1 : 0,
+                }}
+              >
+                Cerrar Sesión
+              </motion.span>
             </Button>
           </div>
         </SidebarBody>
