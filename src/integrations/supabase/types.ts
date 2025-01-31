@@ -9,6 +9,62 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ieasalvay_capacitaciones: {
+        Row: {
+          cantidad_horas: number | null
+          costo: number | null
+          created_at: string | null
+          documentacion_impacto: string | null
+          entidad: string
+          estado: Database["public"]["Enums"]["capacitacion_estado"] | null
+          fecha_conclusion: string | null
+          fecha_inicio: string
+          id: string
+          nombre_curso: string
+          nombre_profesional: string
+          programa: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cantidad_horas?: number | null
+          costo?: number | null
+          created_at?: string | null
+          documentacion_impacto?: string | null
+          entidad: string
+          estado?: Database["public"]["Enums"]["capacitacion_estado"] | null
+          fecha_conclusion?: string | null
+          fecha_inicio: string
+          id?: string
+          nombre_curso: string
+          nombre_profesional: string
+          programa?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cantidad_horas?: number | null
+          costo?: number | null
+          created_at?: string | null
+          documentacion_impacto?: string | null
+          entidad?: string
+          estado?: Database["public"]["Enums"]["capacitacion_estado"] | null
+          fecha_conclusion?: string | null
+          fecha_inicio?: string
+          id?: string
+          nombre_curso?: string
+          nombre_profesional?: string
+          programa?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ieasalvay_capacitaciones_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ieasalvay_usuarios"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       ieasalvay_conversion: {
         Row: {
           created_at: string | null
@@ -170,6 +226,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      capacitacion_estado: "Concluido" | "En curso" | "Pendiente" | "Cancelado"
       insurance_provider:
         | "AVALIAN"
         | "APROSS"
