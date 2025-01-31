@@ -30,14 +30,14 @@ const Menu = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#FFCCCB]">
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-8">
-        <div className="flex flex-col items-center space-y-3">
+        <div className="flex flex-col items-center space-y-2">
           <img 
             src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
             alt="Logo IEA Salvay" 
-            className="h-36" 
+            className="h-54" 
           />
           <div className="space-y-2 text-center">
-            <p className="text-base text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               Sistema para la Administración del
             </p>
             <h1 className="text-2xl font-bold tracking-tighter">
@@ -45,7 +45,7 @@ const Menu = () => {
             </h1>
           </div>
           
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-6">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-4 mt-6">
             {/* Columna 1 */}
             <div className="space-y-4">
               <Button asChild variant="default" className="w-48">
@@ -58,7 +58,7 @@ const Menu = () => {
               <Button asChild variant="default" className="w-48">
                 <Link to="/costos" className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
-                  Costos Determinaciones
+                  Costos Analistos
                 </Link>
               </Button>
               
@@ -70,6 +70,13 @@ const Menu = () => {
               </Button>
               
               <Button asChild variant="default" className="w-48">
+                <Link to="/pacientes" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Pacientes
+                </Link>
+              </Button>
+              
+              <Button asChild variant="default" className="w-48">
                 <Link to="/stock" className="flex items-center gap-2">
                   <Box className="h-4 w-4" />
                   Control Stock
@@ -77,23 +84,9 @@ const Menu = () => {
               </Button>
               
               <Button asChild variant="default" className="w-48">
-                <Link to="/capacitaciones" className="flex items-center gap-2">
-                  <GraduationCap className="h-4 w-4" />
-                  Capacitaciones
-                </Link>
-              </Button>
-              
-              <Button asChild variant="default" className="w-48">
-                <Link to="/recesos" className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Recesos
-                </Link>
-              </Button>
-              
-              <Button asChild variant="default" className="w-48">
                 <Link to="/formularios" className="flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
-                  Respuestas Formularios
+                  Respuestas Pacientes
                 </Link>
               </Button>
             </div>
@@ -108,13 +101,6 @@ const Menu = () => {
               </Button>
               
               <Button asChild variant="default" className="w-48">
-                <Link to="/pacientes" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Pacientes
-                </Link>
-              </Button>
-              
-              <Button asChild variant="default" className="w-48">
                 <Link to="/marketing" className="flex items-center gap-2">
                   <Megaphone className="h-4 w-4" />
                   Marketing
@@ -125,6 +111,20 @@ const Menu = () => {
                 <Link to="/obras-sociales" className="flex items-center gap-2">
                   <Building className="h-4 w-4" />
                   Obras Sociales
+                </Link>
+              </Button>
+              
+              <Button asChild variant="default" className="w-48">
+                <Link to="/capacitaciones" className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  Capacitaciones
+                </Link>
+              </Button>
+              
+              <Button asChild variant="default" className="w-48">
+                <Link to="/recesos" className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Recesos
                 </Link>
               </Button>
             </div>
