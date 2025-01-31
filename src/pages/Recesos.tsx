@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { AppSidebar } from './Menu';
-import { DashboardStats } from '@/components/dashboard/DashboardStats';
-import { RecesosTable } from '@/components/dashboard/RecesosTable';
-import { RecesosChart } from '@/components/dashboard/RecesosChart';
+import { DashboardStats as RecesosStats } from '@/components/recesos/RecesosStats';
+import { RecesosTable } from '@/components/recesos/RecesosTable';
+import { RecesosChart } from '@/components/recesos/RecesosChart';
 
-const Dashboard = () => {
+const Recesos = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ const Dashboard = () => {
         <div className="container mx-auto">
           <h1 className="text-2xl font-bold mb-6">Gestión de Recesos</h1>
           <div className="grid gap-4 md:grid-cols-2">
-            <DashboardStats />
+            <RecesosStats />
             <RecesosChart />
           </div>
           <RecesosTable />
@@ -35,4 +35,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Recesos;
