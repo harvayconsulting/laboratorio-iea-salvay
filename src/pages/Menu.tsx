@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut } from 'lucide-react';
+import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut, Settings2 } from 'lucide-react';
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -73,6 +73,15 @@ export const AppSidebar = () => {
       icon: <CalendarDays className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
     }
   ];
+
+  // Add admin link only for admin users
+  if (user?.user_type === 'admin') {
+    links.push({
+      label: "Administrador",
+      href: "/administracion",
+      icon: <Settings2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+    });
+  }
 
   return (
     <Sidebar open={open} setOpen={setOpen}>
