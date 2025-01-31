@@ -56,7 +56,7 @@ export function CapacitacionesTable() {
       case "En curso":
         return "default";
       case "Concluido":
-        return "success";
+        return "default";
       case "Cancelado":
         return "destructive";
       default:
