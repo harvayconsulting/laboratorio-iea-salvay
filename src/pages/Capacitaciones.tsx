@@ -1,35 +1,22 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
 import { CapacitacionesTable } from "@/components/capacitaciones/CapacitacionesTable";
 import { CapacitacionForm } from "@/components/capacitaciones/CapacitacionForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AppSidebar } from "./Menu";
-import { supabase } from "@/integrations/supabase/client";
 
 const Capacitaciones = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) {
-        navigate("/");
-      }
-    };
+    if (!user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
-    checkUser();
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate("/");
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
+  if (!user) return null;
 
   return (
     <div className="min-h-screen flex bg-white">
