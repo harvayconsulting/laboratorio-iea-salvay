@@ -34,12 +34,17 @@ export function CapacitacionesTable() {
   const { data: capacitaciones, isLoading } = useQuery({
     queryKey: ["capacitaciones"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // If user is not admin, only show their capacitaciones
+      let query = supabase
         .from("ieasalvay_capacitaciones")
         .select("*")
-        .eq("user_id", user?.user_id)
         .order("created_at", { ascending: false });
 
+      if (user?.user_type !== "admin") {
+        query = query.eq("user_id", user?.user_id);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data as Capacitacion[];
     },
@@ -74,6 +79,7 @@ export function CapacitacionesTable() {
             <TableHead>Profesional</TableHead>
             <TableHead>Entidad</TableHead>
             <TableHead>Fecha Inicio</TableHead>
+            <TableHead>Fecha Conclusión</TableHead>
             <TableHead>Estado</TableHead>
             <TableHead>Horas</TableHead>
             <TableHead>Costo</TableHead>
@@ -86,6 +92,11 @@ export function CapacitacionesTable() {
               <TableCell>{capacitacion.nombre_profesional}</TableCell>
               <TableCell>{capacitacion.entidad}</TableCell>
               <TableCell>{format(new Date(capacitacion.fecha_inicio), "dd/MM/yyyy")}</TableCell>
+              <TableCell>
+                {capacitacion.fecha_conclusion
+                  ? format(new Date(capacitacion.fecha_conclusion), "dd/MM/yyyy")
+                  : "-"}
+              </TableCell>
               <TableCell>
                 <Badge variant={getEstadoBadgeVariant(capacitacion.estado)}>
                   {capacitacion.estado}
@@ -104,7 +115,7 @@ export function CapacitacionesTable() {
           ))}
           {(!capacitaciones || capacitaciones.length === 0) && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-4">
+              <TableCell colSpan={8} className="text-center py-4">
                 No hay capacitaciones registradas
               </TableCell>
             </TableRow>

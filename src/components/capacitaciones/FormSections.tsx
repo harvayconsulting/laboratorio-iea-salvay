@@ -10,20 +10,36 @@ interface FormSectionProps {
 }
 
 export const BasicInfoSection = ({ form }: FormSectionProps) => (
-  <>
-    <FormField
-      control={form.control}
-      name="nombre_curso"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Nombre del Curso</FormLabel>
-          <FormControl>
-            <Input {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+  <div className="space-y-4">
+    <div className="grid grid-cols-2 gap-4">
+      <FormField
+        control={form.control}
+        name="nombre_curso"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Nombre del Curso</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="entidad"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Entidad</FormLabel>
+            <FormControl>
+              <Input {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
 
     <FormField
       control={form.control}
@@ -38,25 +54,11 @@ export const BasicInfoSection = ({ form }: FormSectionProps) => (
         </FormItem>
       )}
     />
-
-    <FormField
-      control={form.control}
-      name="entidad"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Entidad</FormLabel>
-          <FormControl>
-            <Input {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  </>
+  </div>
 );
 
 export const DatesSection = ({ form }: FormSectionProps) => (
-  <>
+  <div className="grid grid-cols-2 gap-4">
     <FormField
       control={form.control}
       name="fecha_inicio"
@@ -84,38 +86,40 @@ export const DatesSection = ({ form }: FormSectionProps) => (
         </FormItem>
       )}
     />
-  </>
+  </div>
 );
 
 export const DetailsSection = ({ form }: FormSectionProps) => (
-  <>
-    <FormField
-      control={form.control}
-      name="cantidad_horas"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Cantidad de Horas</FormLabel>
-          <FormControl>
-            <Input type="number" {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+  <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4">
+      <FormField
+        control={form.control}
+        name="cantidad_horas"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Cantidad de Horas</FormLabel>
+            <FormControl>
+              <Input type="number" {...field} className="w-full" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-    <FormField
-      control={form.control}
-      name="costo"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Costo</FormLabel>
-          <FormControl>
-            <Input type="number" step="0.01" {...field} />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+      <FormField
+        control={form.control}
+        name="costo"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Costo</FormLabel>
+            <FormControl>
+              <Input type="number" step="0.01" {...field} className="w-full" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
 
     <FormField
       control={form.control}
@@ -125,7 +129,7 @@ export const DetailsSection = ({ form }: FormSectionProps) => (
           <FormLabel>Estado</FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Seleccione un estado" />
               </SelectTrigger>
             </FormControl>
@@ -140,7 +144,7 @@ export const DetailsSection = ({ form }: FormSectionProps) => (
         </FormItem>
       )}
     />
-  </>
+  </div>
 );
 
 export const ImpactSection = ({ form }: FormSectionProps) => (

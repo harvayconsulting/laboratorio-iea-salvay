@@ -31,12 +31,9 @@ export function CapacitacionForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <BasicInfoSection form={form} />
-          <DatesSection form={form} />
-          <DetailsSection form={form} />
-        </div>
-
+        <BasicInfoSection form={form} />
+        <DatesSection form={form} />
+        <DetailsSection form={form} />
         <ImpactSection form={form} />
 
         <Button type="submit" disabled={isPending}>
