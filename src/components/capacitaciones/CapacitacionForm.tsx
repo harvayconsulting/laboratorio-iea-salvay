@@ -32,8 +32,16 @@ const formSchema = z.object({
   documentacion_impacto: z.string().optional(),
   fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
   fecha_conclusion: z.string().optional(),
-  cantidad_horas: z.string().optional(),
-  costo: z.string().optional(),
+  cantidad_horas: z.string()
+    .refine(val => !val || (Number(val) >= 0 && Number(val) <= 9999), {
+      message: "La cantidad de horas debe ser un número entre 0 y 9999"
+    })
+    .optional(),
+  costo: z.string()
+    .refine(val => !val || (Number(val) >= 0 && Number(val) <= 999999.99), {
+      message: "El costo debe ser un número entre 0 y 999999.99"
+    })
+    .optional(),
   estado: z.enum(["Pendiente", "En curso", "Concluido", "Cancelado"]),
 });
 
@@ -62,7 +70,7 @@ export function CapacitacionForm() {
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       console.log("Submitting values:", values);
       
-      // Prepare the data object with proper type handling
+      // Prepare the data object with proper type handling and validation
       const capacitacionData = {
         nombre_curso: values.nombre_curso,
         programa: values.programa || null,
@@ -77,6 +85,15 @@ export function CapacitacionForm() {
         user_id: user?.user_id || null,
       };
 
+      // Additional validation for numeric fields
+      if (capacitacionData.cantidad_horas && (capacitacionData.cantidad_horas < 0 || capacitacionData.cantidad_horas > 9999)) {
+        throw new Error("La cantidad de horas debe estar entre 0 y 9999");
+      }
+
+      if (capacitacionData.costo && (capacitacionData.costo < 0 || capacitacionData.costo > 999999.99)) {
+        throw new Error("El costo debe estar entre 0 y 999999.99");
+      }
+
       console.log("Prepared data:", capacitacionData);
 
       const { data, error } = await supabase
@@ -87,6 +104,9 @@ export function CapacitacionForm() {
 
       if (error) {
         console.error("Supabase error:", error);
+        if (error.message.includes("numeric field overflow")) {
+          throw new Error("El valor ingresado es demasiado grande para el campo numérico");
+        }
         throw new Error(error.message);
       }
 
@@ -104,7 +124,7 @@ export function CapacitacionForm() {
       console.error("Error creating capacitacion:", error);
       toast({
         title: "Error",
-        description: `No se pudo crear la capacitación: ${error.message}`,
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -276,4 +296,4 @@ export function CapacitacionForm() {
       </form>
     </Form>
   );
-}
+});
