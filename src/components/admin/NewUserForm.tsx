@@ -1,7 +1,4 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,10 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useCreateUser } from "@/hooks/useCreateUser";
 
 const formSchema = z.object({
   user_name: z.string().min(1, "El nombre de usuario es requerido"),
@@ -33,9 +30,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export const NewUserForm = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { mutate: createUser, isPending } = useCreateUser();
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,82 +42,13 @@ export const NewUserForm = () => {
     },
   });
 
-  // Check if user is authenticated and is admin
-  if (!user) {
+  if (!user || user.user_type !== 'admin') {
     return (
       <div className="text-red-500">
-        Debes iniciar sesión para crear usuarios.
+        {!user ? "Debes iniciar sesión para crear usuarios." : "No tienes permisos para crear usuarios. Debes ser administrador."}
       </div>
     );
   }
-
-  if (user.user_type !== 'admin') {
-    return (
-      <div className="text-red-500">
-        No tienes permisos para crear usuarios. Debes ser administrador.
-      </div>
-    );
-  }
-
-  const { mutate: createUser, isPending } = useMutation({
-    mutationFn: async (values: FormValues) => {
-      console.log("Creating user with values:", values);
-      
-      // First check if user exists
-      const { data: existingUser, error: checkError } = await supabase
-        .from('ieasalvay_usuarios')
-        .select('user_name')
-        .eq('user_name', values.user_name)
-        .maybeSingle();
-
-      if (checkError) {
-        console.error('Error checking existing user:', checkError);
-        throw new Error('Error al verificar el nombre de usuario');
-      }
-
-      if (existingUser) {
-        throw new Error('El nombre de usuario ya existe');
-      }
-
-      // Create new user with the current user's ID
-      const { data, error } = await supabase
-        .from('ieasalvay_usuarios')
-        .insert([{
-          user_name: values.user_name,
-          password: values.password,
-          user_type: values.user_type,
-          user_id: user.user_id, // Include the current user's ID
-        }])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating user:', error);
-        if (error.code === '42501') {
-          throw new Error('No tienes permisos para crear usuarios');
-        }
-        throw error;
-      }
-
-      return data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Usuario creado",
-        description: "El usuario ha sido creado exitosamente.",
-      });
-      form.reset();
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-    },
-    onError: (error) => {
-      console.error('Error creating user:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "No se pudo crear el usuario. Por favor, intente nuevamente.",
-        variant: "destructive",
-      });
-    },
-  });
 
   return (
     <Form {...form}>
