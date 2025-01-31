@@ -68,6 +68,14 @@ export default {
 				success: {
 					DEFAULT: '#F2FCE2',
 					foreground: '#1a1a1a'
+				},
+				pending: {
+					DEFAULT: '#FEC6A1',
+					foreground: '#1a1a1a'
+				},
+				inprogress: {
+					DEFAULT: '#D3E4FD',
+					foreground: '#1a1a1a'
 				}
 			},
 			borderRadius: {
@@ -77,20 +85,12 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
 				}
 			},
 			animation: {

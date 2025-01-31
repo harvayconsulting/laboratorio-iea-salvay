@@ -58,11 +58,11 @@ export function CapacitacionesTable() {
   const getEstadoBadgeVariant = (estado: Capacitacion["estado"]) => {
     switch (estado) {
       case "Pendiente":
-        return "secondary";
+        return "pending";
       case "En curso":
-        return "default";
+        return "inprogress";
       case "Concluido":
-        return "default";
+        return "success";
       case "Cancelado":
         return "destructive";
       default:
