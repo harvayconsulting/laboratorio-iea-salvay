@@ -93,6 +93,9 @@ export const NewUserForm = () => {
 
       if (error) {
         console.error('Error creating user:', error);
+        if (error.code === '42501') {
+          throw new Error('No tienes permisos para crear usuarios');
+        }
         throw error;
       }
 
