@@ -9,47 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      error_logs: {
-        Row: {
-          action: string | null
-          component: string | null
-          created_at: string | null
-          id: string
-          message: string
-          stack: string | null
-          timestamp: string
-          user_id: string | null
-        }
-        Insert: {
-          action?: string | null
-          component?: string | null
-          created_at?: string | null
-          id?: string
-          message: string
-          stack?: string | null
-          timestamp: string
-          user_id?: string | null
-        }
-        Update: {
-          action?: string | null
-          component?: string | null
-          created_at?: string | null
-          id?: string
-          message?: string
-          stack?: string | null
-          timestamp?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "error_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "ieasalvay_usuarios"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       ieasalvay_capacitaciones: {
         Row: {
           cantidad_horas: number | null

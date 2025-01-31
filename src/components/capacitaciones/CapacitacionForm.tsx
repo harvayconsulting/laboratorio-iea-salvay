@@ -1,26 +1,49 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormField } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
-import { BasicInfoFields } from "./form/BasicInfoFields";
-import { DateFields } from "./form/DateFields";
-import { NumericFields } from "./form/NumericFields";
-import { StatusField } from "./form/StatusField";
-import { capacitacionFormSchema, type CapacitacionFormValues } from "./types";
-import { logError } from "@/services/errorLogging";
+
+const formSchema = z.object({
+  nombre_curso: z.string().min(1, "El nombre del curso es requerido"),
+  programa: z.string().optional(),
+  entidad: z.string().min(1, "La entidad es requerida"),
+  nombre_profesional: z.string().min(1, "El nombre del profesional es requerido"),
+  documentacion_impacto: z.string().optional(),
+  fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
+  fecha_conclusion: z.string().optional(),
+  cantidad_horas: z.string().optional(),
+  costo: z.string().optional(),
+  estado: z.enum(["Pendiente", "En curso", "Concluido", "Cancelado"]),
+});
 
 export function CapacitacionForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const form = useForm<CapacitacionFormValues>({
-    resolver: zodResolver(capacitacionFormSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       nombre_curso: "",
       programa: "",
@@ -36,40 +59,26 @@ export function CapacitacionForm() {
   });
 
   const { mutate: createCapacitacion, isPending } = useMutation({
-    mutationFn: async (values: CapacitacionFormValues) => {
-      console.log("Submitting values:", values);
-      
-      const capacitacionData = {
-        nombre_curso: values.nombre_curso,
-        programa: values.programa || null,
-        entidad: values.entidad,
-        nombre_profesional: values.nombre_profesional,
-        documentacion_impacto: values.documentacion_impacto || null,
-        fecha_inicio: values.fecha_inicio,
-        fecha_conclusion: values.fecha_conclusion || null,
-        cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
-        costo: values.costo ? parseFloat(values.costo) : null,
-        estado: values.estado,
-        user_id: user?.user_id || null,
-      };
-
-      console.log("Prepared data:", capacitacionData);
-
+    mutationFn: async (values: z.infer<typeof formSchema>) => {
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
-        .insert(capacitacionData)
+        .insert({
+          nombre_curso: values.nombre_curso,
+          programa: values.programa || null,
+          entidad: values.entidad,
+          nombre_profesional: values.nombre_profesional,
+          documentacion_impacto: values.documentacion_impacto || null,
+          fecha_inicio: values.fecha_inicio,
+          fecha_conclusion: values.fecha_conclusion || null,
+          cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
+          costo: values.costo ? parseFloat(values.costo) : null,
+          estado: values.estado,
+          user_id: user?.user_id,
+        })
         .select()
-        .maybeSingle();
+        .single();
 
-      if (error) {
-        await logError(error, {
-          userId: user?.user_id,
-          component: 'CapacitacionForm',
-          action: 'createCapacitacion'
-        });
-        throw new Error(error.message);
-      }
-
+      if (error) throw error;
       return data;
     },
     onSuccess: () => {
@@ -80,23 +89,17 @@ export function CapacitacionForm() {
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["capacitaciones"] });
     },
-    onError: async (error: Error) => {
+    onError: (error) => {
       console.error("Error creating capacitacion:", error);
-      await logError(error, {
-        userId: user?.user_id,
-        component: 'CapacitacionForm',
-        action: 'createCapacitacion'
-      });
       toast({
         title: "Error",
-        description: error.message,
+        description: "No se pudo crear la capacitación. Por favor, intente nuevamente.",
         variant: "destructive",
       });
     },
   });
 
-  function onSubmit(values: CapacitacionFormValues) {
-    console.log("Form values:", values);
+  function onSubmit(values: z.infer<typeof formSchema>) {
     createCapacitacion(values);
   }
 
@@ -104,22 +107,154 @@ export function CapacitacionForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <BasicInfoFields form={form} />
-          <DateFields form={form} />
-          <NumericFields form={form} />
-          <StatusField form={form} />
+          <FormField
+            control={form.control}
+            name="nombre_curso"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre del Curso</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="programa"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Programa</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="entidad"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Entidad</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="nombre_profesional"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre del Profesional</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="fecha_inicio"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fecha de Inicio</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="fecha_conclusion"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fecha de Conclusión</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="cantidad_horas"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cantidad de Horas</FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="costo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Costo</FormLabel>
+                <FormControl>
+                  <Input type="number" step="0.01" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="estado"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estado</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione un estado" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Pendiente">Pendiente</SelectItem>
+                    <SelectItem value="En curso">En curso</SelectItem>
+                    <SelectItem value="Concluido">Concluido</SelectItem>
+                    <SelectItem value="Cancelado">Cancelado</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
           control={form.control}
           name="documentacion_impacto"
           render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Documentación de Impacto
-              </label>
-              <Textarea {...field} />
-            </div>
+            <FormItem>
+              <FormLabel>Documentación de Impacto</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
 
