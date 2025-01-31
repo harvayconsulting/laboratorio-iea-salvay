@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
@@ -60,6 +60,8 @@ export function CapacitacionForm() {
 
   const { mutate: createCapacitacion, isPending } = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+      console.log("Submitting values:", values); // Debug log
+      
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
         .insert({
@@ -78,7 +80,15 @@ export function CapacitacionForm() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error); // Debug log
+        throw error;
+      }
+      
+      if (!data) {
+        throw new Error("No data returned from insert");
+      }
+      
       return data;
     },
     onSuccess: () => {
@@ -100,6 +110,7 @@ export function CapacitacionForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Form values:", values); // Debug log
     createCapacitacion(values);
   }
 
