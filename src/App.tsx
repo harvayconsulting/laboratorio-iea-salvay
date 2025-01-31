@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import NBU from "./pages/NBU";
 import Menu from "./pages/Menu";
 import Pacientes from "./pages/Pacientes";
+import Capacitaciones from "./pages/Capacitaciones";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/recesos" element={<Recesos />} />
           <Route path="/nbu" element={<NBU />} />
           <Route path="/pacientes" element={<Pacientes />} />
+          <Route path="/capacitaciones" element={<Capacitaciones />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
