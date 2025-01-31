@@ -58,11 +58,16 @@ export const NewUserForm = () => {
     mutationFn: async (values: FormValues) => {
       console.log("Creating user with values:", values);
       
-      const { data: existingUser } = await supabase
+      const { data: existingUser, error: checkError } = await supabase
         .from('ieasalvay_usuarios')
         .select('user_name')
         .eq('user_name', values.user_name)
-        .single();
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking existing user:', checkError);
+        throw new Error('Error al verificar el nombre de usuario');
+      }
 
       if (existingUser) {
         throw new Error('El nombre de usuario ya existe');
@@ -76,12 +81,17 @@ export const NewUserForm = () => {
           user_type: values.user_type,
         }])
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error details:', error);
         throw error;
       }
+
+      if (!data) {
+        throw new Error('No se pudo crear el usuario');
+      }
+
       return data;
     },
     onSuccess: () => {
