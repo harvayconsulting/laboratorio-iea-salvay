@@ -68,10 +68,13 @@ export const Sidebar = ({
 };
 
 export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+  const desktopProps = { ...props };
+  const mobileProps = { className: props.className };
+  
   return (
     <>
-      <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <DesktopSidebar {...desktopProps} />
+      <MobileSidebar {...mobileProps} />
     </>
   );
 };
@@ -102,9 +105,9 @@ export const DesktopSidebar = ({
 
 export const MobileSidebar = ({
   className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) => {
+}: {
+  className?: string;
+}) => {
   const { open, setOpen } = useSidebar();
   return (
     <>
@@ -112,7 +115,6 @@ export const MobileSidebar = ({
         className={cn(
           "h-10 px-4 py-4 flex flex-row md:hidden items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full"
         )}
-        {...props}
       >
         <div className="flex justify-end z-20 w-full">
           <Menu
@@ -141,7 +143,9 @@ export const MobileSidebar = ({
               >
                 <X />
               </div>
-              {children}
+              <div className="flex flex-col flex-1">
+                {/* Content will be injected here */}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
