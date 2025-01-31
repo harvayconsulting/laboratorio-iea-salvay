@@ -296,4 +296,4 @@ export function CapacitacionForm() {
       </form>
     </Form>
   );
-});
+}
