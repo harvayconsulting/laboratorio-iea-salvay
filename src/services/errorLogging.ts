@@ -1,13 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-interface ErrorLog {
-  message: string;
-  stack?: string;
-  timestamp: string;
-  userId?: string;
-  component?: string;
-  action?: string;
-}
+type ErrorLog = Database['public']['Tables']['error_logs']['Insert']
 
 export const logError = async (error: Error, additionalInfo?: {
   userId?: string;
@@ -18,15 +12,17 @@ export const logError = async (error: Error, additionalInfo?: {
     message: error.message,
     stack: error.stack,
     timestamp: new Date().toISOString(),
-    ...additionalInfo
+    user_id: additionalInfo?.userId,
+    component: additionalInfo?.component,
+    action: additionalInfo?.action
   };
 
   console.error('Error logged:', errorLog);
 
   try {
-    const { data, error: uploadError } = await supabase
+    const { error: uploadError } = await supabase
       .from('error_logs')
-      .insert([errorLog]);
+      .insert(errorLog);
 
     if (uploadError) {
       console.error('Error saving log to Supabase:', uploadError);
