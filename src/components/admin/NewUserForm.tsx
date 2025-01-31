@@ -66,6 +66,7 @@ export const NewUserForm = () => {
     mutationFn: async (values: FormValues) => {
       console.log("Creating user with values:", values);
       
+      // First check if user exists
       const { data: existingUser, error: checkError } = await supabase
         .from('ieasalvay_usuarios')
         .select('user_name')
@@ -81,15 +82,17 @@ export const NewUserForm = () => {
         throw new Error('El nombre de usuario ya existe');
       }
 
+      // Create new user with the current user's ID
       const { data, error } = await supabase
         .from('ieasalvay_usuarios')
         .insert([{
           user_name: values.user_name,
           password: values.password,
           user_type: values.user_type,
+          user_id: user.user_id, // Include the current user's ID
         }])
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error('Error creating user:', error);
@@ -97,10 +100,6 @@ export const NewUserForm = () => {
           throw new Error('No tienes permisos para crear usuarios');
         }
         throw error;
-      }
-
-      if (!data) {
-        throw new Error('No se pudo crear el usuario');
       }
 
       return data;
