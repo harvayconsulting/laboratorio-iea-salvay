@@ -16,6 +16,8 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
         throw new Error("Usuario no autenticado");
       }
 
+      console.log("Creating capacitacion with user:", user);
+
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
         .insert({
@@ -38,6 +40,8 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
         console.error("Error details:", error);
         throw error;
       }
+
+      console.log("Capacitacion created successfully:", data);
       return data;
     },
     onSuccess: () => {
