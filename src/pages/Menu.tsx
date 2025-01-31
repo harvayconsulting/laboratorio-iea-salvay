@@ -88,6 +88,16 @@ export const AppSidebar = () => {
             >
               Bienvenido, {user?.user_name}
             </motion.div>
+            {/* Add empty line when collapsed */}
+            <motion.div 
+              className="px-4 py-3 text-sm text-neutral-700"
+              animate={{
+                display: !open ? 'block' : 'none',
+                opacity: !open ? 1 : 0,
+              }}
+            >
+              &nbsp;
+            </motion.div>
           </div>
           <div className="flex flex-col gap-2">
             {links.map((link, idx) => (
