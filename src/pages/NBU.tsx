@@ -25,9 +25,6 @@ const NBU = () => {
       <main className="flex-1 p-8">
         <div className="container mx-auto">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">Gestión de NBU</CardTitle>
-            </CardHeader>
             <CardContent>
               <NBUForm />
             </CardContent>
