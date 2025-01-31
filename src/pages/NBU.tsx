@@ -24,11 +24,7 @@ const NBU = () => {
       <AppSidebar />
       <main className="flex-1 p-8">
         <div className="container mx-auto">
-          <Card>
-            <CardContent>
-              <NBUForm />
-            </CardContent>
-          </Card>
+          <NBUForm />
           <CurrentNBUTable />
           <NBUHistory />
         </div>
