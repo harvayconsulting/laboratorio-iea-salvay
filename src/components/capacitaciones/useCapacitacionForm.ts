@@ -16,6 +16,10 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
         throw new Error("Usuario no autenticado");
       }
 
+      // Log the user and values for debugging
+      console.log("Current user:", user);
+      console.log("Form values:", values);
+
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
         .insert({
@@ -29,12 +33,16 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
           cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
           costo: values.costo ? parseFloat(values.costo) : null,
           estado: values.estado,
-          user_id: user.user_id,
+          user_id: user.user_id, // Explicitly set the user_id
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+
       return data;
     },
     onSuccess: () => {
