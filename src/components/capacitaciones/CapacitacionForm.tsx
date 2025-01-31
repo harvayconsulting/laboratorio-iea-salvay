@@ -35,14 +35,17 @@ export function CapacitacionForm() {
     entidad: z.string().min(1, "La entidad es requerida"),
     documentacion_impacto: z.string().optional(),
     fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
-    fecha_conclusion: z.string().refine(
-      (date, ctx) => {
-        const startDate = ctx.parent.fecha_inicio;
-        if (!date || !startDate) return true;
-        return new Date(date) >= new Date(startDate);
-      },
-      "La fecha de conclusión no puede ser anterior a la fecha de inicio"
-    ).optional(),
+    fecha_conclusion: z.string().optional().superRefine((fecha_conclusion, ctx) => {
+      const fecha_inicio = ctx.parent.fecha_inicio;
+      if (fecha_conclusion && fecha_inicio) {
+        if (new Date(fecha_conclusion) < new Date(fecha_inicio)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "La fecha de conclusión no puede ser anterior a la fecha de inicio",
+          });
+        }
+      }
+    }),
     cantidad_horas: z.string().optional(),
     costo: z.string().optional(),
     estado: z.enum(["Pendiente", "En curso", "Concluido", "Cancelado"]),
