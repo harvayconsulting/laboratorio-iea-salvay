@@ -28,10 +28,12 @@ const formSchema = z.object({
   nombre_curso: z.string().min(1, "El nombre del curso es requerido"),
   programa: z.string().optional(),
   entidad: z.string().min(1, "La entidad es requerida"),
-  nombre_profesional: z.string().min(1, "El nombre del profesional es requerido"),
   documentacion_impacto: z.string().optional(),
   fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
-  fecha_conclusion: z.string().optional(),
+  fecha_conclusion: z.string().refine(
+    (date) => !date || new Date(date) >= new Date(form.getValues("fecha_inicio")),
+    "La fecha de conclusión no puede ser anterior a la fecha de inicio"
+  ).optional(),
   cantidad_horas: z.string().optional(),
   costo: z.string().optional(),
   estado: z.enum(["Pendiente", "En curso", "Concluido", "Cancelado"]),
@@ -48,9 +50,8 @@ export function CapacitacionForm() {
       nombre_curso: "",
       programa: "",
       entidad: "",
-      nombre_profesional: "",
       documentacion_impacto: "",
-      fecha_inicio: new Date().toISOString().split("T")[0],
+      fecha_inicio: "",
       fecha_conclusion: "",
       cantidad_horas: "",
       costo: "",
@@ -60,20 +61,24 @@ export function CapacitacionForm() {
 
   const { mutate: createCapacitacion, isPending } = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
+      if (!user?.user_id) {
+        throw new Error("Usuario no autenticado");
+      }
+
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
         .insert({
           nombre_curso: values.nombre_curso,
           programa: values.programa || null,
           entidad: values.entidad,
-          nombre_profesional: values.nombre_profesional,
+          nombre_profesional: user.user_name, // Using the logged-in user's name
           documentacion_impacto: values.documentacion_impacto || null,
           fecha_inicio: values.fecha_inicio,
           fecha_conclusion: values.fecha_conclusion || null,
           cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
           costo: values.costo ? parseFloat(values.costo) : null,
           estado: values.estado,
-          user_id: user?.user_id,
+          user_id: user.user_id,
         })
         .select()
         .single();
@@ -128,7 +133,7 @@ export function CapacitacionForm() {
               <FormItem>
                 <FormLabel>Programa</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Textarea {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -141,20 +146,6 @@ export function CapacitacionForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Entidad</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="nombre_profesional"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre del Profesional</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

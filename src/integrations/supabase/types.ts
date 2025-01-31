@@ -147,6 +147,39 @@ export type Database = {
           },
         ]
       }
+      ieasalvay_marketing: {
+        Row: {
+          created_at: string
+          designLinks: string
+          footerText: string
+          id: number
+          ideaDescription: string
+          postDate: string
+          Source: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          designLinks: string
+          footerText: string
+          id?: number
+          ideaDescription: string
+          postDate: string
+          Source?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          designLinks?: string
+          footerText?: string
+          id?: number
+          ideaDescription?: string
+          postDate?: string
+          Source?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       ieasalvay_nbu: {
         Row: {
           created_at: string | null
