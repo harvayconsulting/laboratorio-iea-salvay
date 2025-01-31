@@ -43,6 +43,7 @@ export function CapacitacionesTable() {
       if (error) throw error;
       return data as Capacitacion[];
     },
+    enabled: !!user?.user_id,
   });
 
   if (isLoading) {
