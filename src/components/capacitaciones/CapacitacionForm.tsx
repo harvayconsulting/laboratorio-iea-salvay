@@ -60,35 +60,36 @@ export function CapacitacionForm() {
 
   const { mutate: createCapacitacion, isPending } = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      console.log("Submitting values:", values); // Debug log
+      console.log("Submitting values:", values);
       
+      // Prepare the data object with proper type handling
+      const capacitacionData = {
+        nombre_curso: values.nombre_curso,
+        programa: values.programa || null,
+        entidad: values.entidad,
+        nombre_profesional: values.nombre_profesional,
+        documentacion_impacto: values.documentacion_impacto || null,
+        fecha_inicio: values.fecha_inicio,
+        fecha_conclusion: values.fecha_conclusion || null,
+        cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
+        costo: values.costo ? parseFloat(values.costo) : null,
+        estado: values.estado,
+        user_id: user?.user_id || null,
+      };
+
+      console.log("Prepared data:", capacitacionData);
+
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
-        .insert({
-          nombre_curso: values.nombre_curso,
-          programa: values.programa || null,
-          entidad: values.entidad,
-          nombre_profesional: values.nombre_profesional,
-          documentacion_impacto: values.documentacion_impacto || null,
-          fecha_inicio: values.fecha_inicio,
-          fecha_conclusion: values.fecha_conclusion || null,
-          cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
-          costo: values.costo ? parseFloat(values.costo) : null,
-          estado: values.estado,
-          user_id: user?.user_id,
-        })
+        .insert(capacitacionData)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
-        console.error("Supabase error:", error); // Debug log
-        throw error;
+        console.error("Supabase error:", error);
+        throw new Error(error.message);
       }
-      
-      if (!data) {
-        throw new Error("No data returned from insert");
-      }
-      
+
       return data;
     },
     onSuccess: () => {
@@ -99,18 +100,18 @@ export function CapacitacionForm() {
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["capacitaciones"] });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error creating capacitacion:", error);
       toast({
         title: "Error",
-        description: "No se pudo crear la capacitación. Por favor, intente nuevamente.",
+        description: `No se pudo crear la capacitación: ${error.message}`,
         variant: "destructive",
       });
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form values:", values); // Debug log
+    console.log("Form values:", values);
     createCapacitacion(values);
   }
 
