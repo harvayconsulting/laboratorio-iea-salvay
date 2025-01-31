@@ -24,25 +24,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
-const formSchema = z.object({
-  nombre_curso: z.string().min(1, "El nombre del curso es requerido"),
-  programa: z.string().optional(),
-  entidad: z.string().min(1, "La entidad es requerida"),
-  documentacion_impacto: z.string().optional(),
-  fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
-  fecha_conclusion: z.string().refine(
-    (date) => !date || new Date(date) >= new Date(form.getValues("fecha_inicio")),
-    "La fecha de conclusión no puede ser anterior a la fecha de inicio"
-  ).optional(),
-  cantidad_horas: z.string().optional(),
-  costo: z.string().optional(),
-  estado: z.enum(["Pendiente", "En curso", "Concluido", "Cancelado"]),
-});
-
 export function CapacitacionForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+
+  const formSchema = z.object({
+    nombre_curso: z.string().min(1, "El nombre del curso es requerido"),
+    programa: z.string().optional(),
+    entidad: z.string().min(1, "La entidad es requerida"),
+    documentacion_impacto: z.string().optional(),
+    fecha_inicio: z.string().min(1, "La fecha de inicio es requerida"),
+    fecha_conclusion: z.string().refine(
+      (date, ctx) => {
+        const startDate = ctx.parent.fecha_inicio;
+        if (!date || !startDate) return true;
+        return new Date(date) >= new Date(startDate);
+      },
+      "La fecha de conclusión no puede ser anterior a la fecha de inicio"
+    ).optional(),
+    cantidad_horas: z.string().optional(),
+    costo: z.string().optional(),
+    estado: z.enum(["Pendiente", "En curso", "Concluido", "Cancelado"]),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,7 +75,7 @@ export function CapacitacionForm() {
           nombre_curso: values.nombre_curso,
           programa: values.programa || null,
           entidad: values.entidad,
-          nombre_profesional: user.user_name, // Using the logged-in user's name
+          nombre_profesional: user.user_name,
           documentacion_impacto: values.documentacion_impacto || null,
           fecha_inicio: values.fecha_inicio,
           fecha_conclusion: values.fecha_conclusion || null,
