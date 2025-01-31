@@ -36,8 +36,8 @@ export default {
           foreground: 'hsl(var(--secondary-foreground))'
         },
         destructive: {
-          DEFAULT: '#F1F1F1', // Updated to light gray for "Cancelado" status
-          foreground: 'hsl(var(--destructive-foreground))'
+          DEFAULT: '#F1F1F1',
+          foreground: '#1a1a1a' // Updated to black for "Cancelado" status
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
