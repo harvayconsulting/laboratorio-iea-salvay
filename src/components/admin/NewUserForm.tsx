@@ -21,18 +21,29 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
-type FormValues = {
-  user_name: string;
-  password: string;
-  user_type: 'admin' | 'bioquimica';
-};
+const formSchema = z.object({
+  user_name: z.string().min(1, "El nombre de usuario es requerido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  user_type: z.enum(["admin", "bioquimica"] as const),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export const NewUserForm = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const form = useForm<FormValues>();
   const { user } = useAuth();
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      user_name: "",
+      password: "",
+      user_type: undefined,
+    },
+  });
 
   // Check if user is authenticated and is admin
   if (!user || user.user_type !== 'admin') {
@@ -45,16 +56,30 @@ export const NewUserForm = () => {
 
   const { mutate: createUser, isPending } = useMutation({
     mutationFn: async (values: FormValues) => {
-      console.log("Creating user with values:", values); // Debug log
+      console.log("Creating user with values:", values);
       
+      const { data: existingUser } = await supabase
+        .from('ieasalvay_usuarios')
+        .select('user_name')
+        .eq('user_name', values.user_name)
+        .single();
+
+      if (existingUser) {
+        throw new Error('El nombre de usuario ya existe');
+      }
+
       const { data, error } = await supabase
         .from('ieasalvay_usuarios')
-        .insert([values])
+        .insert([{
+          user_name: values.user_name,
+          password: values.password,
+          user_type: values.user_type,
+        }])
         .select()
         .single();
 
       if (error) {
-        console.error('Error details:', error); // Debug log
+        console.error('Error details:', error);
         throw error;
       }
       return data;
@@ -71,7 +96,7 @@ export const NewUserForm = () => {
       console.error('Error creating user:', error);
       toast({
         title: "Error",
-        description: "No se pudo crear el usuario. Por favor, intente nuevamente.",
+        description: error instanceof Error ? error.message : "No se pudo crear el usuario. Por favor, intente nuevamente.",
         variant: "destructive",
       });
     },
