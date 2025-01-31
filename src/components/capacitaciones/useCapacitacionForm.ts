@@ -34,7 +34,10 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error details:", error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
