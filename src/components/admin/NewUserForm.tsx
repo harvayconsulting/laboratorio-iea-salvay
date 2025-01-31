@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/lib/auth";
 
 type FormValues = {
   user_name: string;
@@ -31,16 +32,31 @@ export const NewUserForm = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm<FormValues>();
+  const { user } = useAuth();
+
+  // Check if user is authenticated and is admin
+  if (!user || user.user_type !== 'admin') {
+    return (
+      <div className="text-red-500">
+        No tienes permisos para crear usuarios. Debes ser administrador.
+      </div>
+    );
+  }
 
   const { mutate: createUser, isPending } = useMutation({
     mutationFn: async (values: FormValues) => {
+      console.log("Creating user with values:", values); // Debug log
+      
       const { data, error } = await supabase
         .from('ieasalvay_usuarios')
         .insert([values])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error details:', error); // Debug log
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
