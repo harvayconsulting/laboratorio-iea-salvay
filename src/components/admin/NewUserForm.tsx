@@ -46,7 +46,15 @@ export const NewUserForm = () => {
   });
 
   // Check if user is authenticated and is admin
-  if (!user || user.user_type !== 'admin') {
+  if (!user) {
+    return (
+      <div className="text-red-500">
+        Debes iniciar sesión para crear usuarios.
+      </div>
+    );
+  }
+
+  if (user.user_type !== 'admin') {
     return (
       <div className="text-red-500">
         No tienes permisos para crear usuarios. Debes ser administrador.
@@ -84,7 +92,7 @@ export const NewUserForm = () => {
         .maybeSingle();
 
       if (error) {
-        console.error('Error details:', error);
+        console.error('Error creating user:', error);
         throw error;
       }
 
