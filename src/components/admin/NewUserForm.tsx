@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useCreateUser } from "@/hooks/useCreateUser";
+import type { NewUserData } from "@/hooks/useCreateUser";
 
 const formSchema = z.object({
   user_name: z.string().min(1, "El nombre de usuario es requerido"),
@@ -27,18 +28,16 @@ const formSchema = z.object({
   user_type: z.enum(["admin", "bioquimica"] as const),
 });
 
-type FormValues = z.infer<typeof formSchema>;
-
 export const NewUserForm = () => {
   const { user } = useAuth();
   const { mutate: createUser, isPending } = useCreateUser();
   
-  const form = useForm<FormValues>({
+  const form = useForm<NewUserData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       user_name: "",
       password: "",
-      user_type: undefined,
+      user_type: "bioquimica", // Providing a default value
     },
   });
 
@@ -50,9 +49,13 @@ export const NewUserForm = () => {
     );
   }
 
+  const onSubmit = (data: NewUserData) => {
+    createUser(data);
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => createUser(data))} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="user_name"
