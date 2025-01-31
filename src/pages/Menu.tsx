@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays } from 'lucide-react';
+import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut } from 'lucide-react';
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 const Menu = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -15,6 +16,11 @@ const Menu = () => {
       navigate('/');
     }
   }, [user, navigate]);
+
+  const handleLogout = () => {
+    setUser(null);
+    navigate('/');
+  };
 
   const links = [
     {
@@ -79,13 +85,26 @@ const Menu = () => {
   return (
     <div className="min-h-screen flex bg-white">
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="flex flex-col gap-2">
+        <SidebarBody className="flex flex-col justify-between h-full">
+          <div className="flex flex-col flex-1">
+            <div className="px-4 py-3 text-sm text-neutral-700">
+              Bienvenido, {user?.user_name}
+            </div>
+            <div className="flex flex-col gap-2 px-2">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
             </div>
+          </div>
+          <div className="px-4 py-4">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              Cerrar Sesión
+            </Button>
           </div>
         </SidebarBody>
       </Sidebar>
