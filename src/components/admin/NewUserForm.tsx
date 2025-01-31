@@ -37,7 +37,7 @@ export const NewUserForm = () => {
     defaultValues: {
       user_name: "",
       password: "",
-      user_type: "bioquimica", // Providing a default value
+      user_type: "bioquimica",
     },
   });
 
@@ -49,8 +49,13 @@ export const NewUserForm = () => {
     );
   }
 
-  const onSubmit = (data: NewUserData) => {
-    createUser(data);
+  const onSubmit = async (data: NewUserData) => {
+    try {
+      await createUser(data);
+      form.reset(); // Reset form on success
+    } catch (error) {
+      console.error('Error in form submission:', error);
+    }
   };
 
   return (
