@@ -9,8 +9,9 @@ export const capacitacionFormSchema = z.object({
   fecha_conclusion: z.string().optional().superRefine((fecha_conclusion, ctx) => {
     if (!fecha_conclusion) return;
 
-    const formData = ctx.parent;
-    const fecha_inicio = formData.fecha_inicio;
+    const path = [...ctx.path];
+    path.pop();
+    const fecha_inicio = ctx.path[path.length - 1] as string;
     
     if (!fecha_inicio) return;
 
