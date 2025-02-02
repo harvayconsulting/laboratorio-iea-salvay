@@ -18,7 +18,7 @@ export const useCreateUser = () => {
         throw new Error('Debes iniciar sesión para crear usuarios.');
       }
 
-      // First verify if the current user is an admin
+      // First verify if the current user is an admin using auth.uid()
       const { data: currentUser, error: verifyError } = await supabase
         .from('ieasalvay_usuarios')
         .select('user_type')
@@ -50,7 +50,7 @@ export const useCreateUser = () => {
         throw new Error('El nombre de usuario ya existe');
       }
 
-      // Create new user with explicit user_id
+      // Create new user
       const { data, error } = await supabase
         .from('ieasalvay_usuarios')
         .insert([{
