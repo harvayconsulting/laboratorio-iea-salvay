@@ -18,7 +18,7 @@ export const useCreateUser = () => {
         throw new Error('Debes iniciar sesión para crear usuarios.');
       }
 
-      // First verify if the current user is an admin using auth.uid()
+      // First verify if the current user is an admin
       const { data: currentUser, error: verifyError } = await supabase
         .from('ieasalvay_usuarios')
         .select('user_type')
