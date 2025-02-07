@@ -90,6 +90,10 @@ export const AppSidebar = () => {
     ...disabledLinks
   ];
 
+  const preventDefaultClick = () => {
+    // Empty function that takes no parameters
+  };
+
   return (
     <Sidebar open={open} setOpen={setOpen}>
       <SidebarBody className="flex flex-col justify-between h-full">
@@ -116,7 +120,7 @@ export const AppSidebar = () => {
                 className={cn(
                   !link.href && "text-gray-300 cursor-not-allowed hover:bg-transparent"
                 )}
-                onClick={link.href ? undefined : (e: React.MouseEvent) => e.preventDefault()}
+                onClick={link.href ? undefined : preventDefaultClick}
               />
             ))}
           </div>
