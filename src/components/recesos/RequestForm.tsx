@@ -27,8 +27,10 @@ export const RequestForm = () => {
       return 'La fecha de fin no puede ser anterior a la fecha de inicio';
     }
     
-    const businessDays = differenceInBusinessDays(endDate, startDate) + 1;
-    if (businessDays > 4) {
+    const businessDays = differenceInBusinessDays(endDate, startDate);
+    console.log('Business days calculated:', businessDays);
+    
+    if (businessDays > 3) { // Changed from 4 to 3 since differenceInBusinessDays doesn't include the end date
       return 'El receso no puede exceder los 4 días hábiles';
     }
     
@@ -136,3 +138,4 @@ export const RequestForm = () => {
     </form>
   );
 };
+
