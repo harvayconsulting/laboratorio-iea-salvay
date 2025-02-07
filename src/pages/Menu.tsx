@@ -1,85 +1,105 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut, Settings2 } from 'lucide-react';
+import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut, Settings2, Menu as MenuIcon, X } from 'lucide-react';
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const AppSidebar = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleLogout = () => {
     setUser(null);
     navigate('/');
   };
 
+  const isDisabledLink = (href: string) => {
+    if (user?.user_type === 'bioquimica') {
+      return !['/capacitaciones', '/recesos'].includes(href);
+    }
+    return false;
+  };
+
   const links = [
     {
       label: "Reporte Jornada",
       href: "/reporte-jornada",
-      icon: <Book className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <Book className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Costos Analitos",
       href: "/costos-analitos",
-      icon: <ChartBar className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <ChartBar className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Actividades Periódicas",
       href: "/actividades",
-      icon: <Activity className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <Activity className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Pacientes",
       href: "/pacientes",
-      icon: <Users className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <Users className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Control Stock",
       href: "/control-stock",
-      icon: <Package className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <Package className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Respuestas Formularios",
       href: "/respuestas",
-      icon: <MessageSquare className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "NBU",
-      href: "/nbu",
-      icon: <Database className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <MessageSquare className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Marketing",
       href: "/marketing",
-      icon: <Megaphone className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <Megaphone className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Obras Sociales",
       href: "/obras-sociales",
-      icon: <User className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <User className="h-5 w-5" />,
+      disabled: true
     },
     {
       label: "Capacitaciones",
       href: "/capacitaciones",
-      icon: <GraduationCap className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <GraduationCap className="h-5 w-5" />
     },
     {
       label: "Recesos",
       href: "/recesos",
-      icon: <CalendarDays className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <CalendarDays className="h-5 w-5" />
     }
   ];
 
-  // Add admin link only for admin users
+  // Filter out NBU for biochemists and add admin link for admins
+  const filteredLinks = links.filter(link => {
+    if (user?.user_type === 'bioquimica') {
+      return link.href !== '/nbu';
+    }
+    return true;
+  });
+
   if (user?.user_type === 'admin') {
-    links.push({
+    filteredLinks.push({
       label: "Administrador",
       href: "/administracion",
-      icon: <Settings2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+      icon: <Settings2 className="h-5 w-5" />
     });
   }
 
@@ -98,8 +118,15 @@ export const AppSidebar = () => {
             </motion.div>
           </div>
           <div className="flex flex-col gap-2">
-            {links.map((link, idx) => (
-              <SidebarLink key={idx} link={link} />
+            {filteredLinks.map((link, idx) => (
+              <SidebarLink 
+                key={idx} 
+                link={link}
+                className={cn(
+                  link.disabled && "pointer-events-none text-gray-300",
+                  isDisabledLink(link.href) && "pointer-events-none text-gray-300"
+                )}
+              />
             ))}
           </div>
         </div>
@@ -134,7 +161,7 @@ const Menu = () => {
   return (
     <div className="min-h-screen flex bg-white">
       <AppSidebar />
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <p className="text-[1.1rem] text-muted-foreground">
@@ -146,7 +173,7 @@ const Menu = () => {
             <img 
               src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
               alt="Logo IEA Salvay" 
-              className="h-36 w-auto mx-auto"
+              className="h-24 md:h-36 w-auto mx-auto"
             />
           </div>
         </div>
