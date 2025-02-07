@@ -16,52 +16,7 @@ export const AppSidebar = () => {
     navigate('/');
   };
 
-  const links = [
-    {
-      label: "Reporte Jornada",
-      href: "/reporte-jornada",
-      icon: <Book className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Costos Analitos",
-      href: "/costos-analitos",
-      icon: <ChartBar className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Actividades Periódicas",
-      href: "/actividades",
-      icon: <Activity className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Pacientes",
-      href: "/pacientes",
-      icon: <Users className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Control Stock",
-      href: "/control-stock",
-      icon: <Package className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Respuestas Formularios",
-      href: "/respuestas",
-      icon: <MessageSquare className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "NBU",
-      href: "/nbu",
-      icon: <Database className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Marketing",
-      href: "/marketing",
-      icon: <Megaphone className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
-    {
-      label: "Obras Sociales",
-      href: "/obras-sociales",
-      icon: <User className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    },
+  const availableLinks = [
     {
       label: "Capacitaciones",
       href: "/capacitaciones",
@@ -74,14 +29,59 @@ export const AppSidebar = () => {
     }
   ];
 
-  // Add admin link only for admin users
-  if (user?.user_type === 'admin') {
-    links.push({
+  const adminOnlyLinks = [
+    {
+      label: "NBU",
+      href: "/nbu",
+      icon: <Database className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+    },
+    {
       label: "Administrador",
       href: "/administracion",
       icon: <Settings2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
-    });
-  }
+    }
+  ];
+
+  const disabledLinks = [
+    {
+      label: "Reporte Jornada",
+      icon: <Book className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Costos Analitos",
+      icon: <ChartBar className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Actividades Periódicas",
+      icon: <Activity className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Pacientes",
+      icon: <Users className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Control Stock",
+      icon: <Package className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Respuestas Formularios",
+      icon: <MessageSquare className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Marketing",
+      icon: <Megaphone className="text-gray-300 h-5 w-5" />
+    },
+    {
+      label: "Obras Sociales",
+      icon: <User className="text-gray-300 h-5 w-5" />
+    }
+  ];
+
+  const links = [
+    ...availableLinks,
+    ...(user?.user_type === 'admin' ? adminOnlyLinks : []),
+    ...disabledLinks
+  ];
 
   return (
     <Sidebar open={open} setOpen={setOpen}>
@@ -99,7 +99,17 @@ export const AppSidebar = () => {
           </div>
           <div className="flex flex-col gap-2">
             {links.map((link, idx) => (
-              <SidebarLink key={idx} link={link} />
+              <SidebarLink
+                key={idx}
+                link={{
+                  ...link,
+                  href: link.href || '#' // Use '#' for disabled links
+                }}
+                className={cn(
+                  !link.href && "text-gray-300 cursor-not-allowed hover:bg-transparent"
+                )}
+                onClick={link.href ? undefined : (e) => e.preventDefault()}
+              />
             ))}
           </div>
         </div>
