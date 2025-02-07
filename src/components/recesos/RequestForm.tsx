@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,7 +59,10 @@ export const RequestForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted');
+    
     if (!user?.user_id) {
+      console.error('No user found');
       toast({
         title: 'Error',
         description: 'Usuario no autenticado',
@@ -69,6 +73,7 @@ export const RequestForm = () => {
 
     const validationError = validateDates(startDate, endDate);
     if (validationError) {
+      console.log('Date validation error:', validationError);
       toast({
         title: 'Error',
         description: validationError,
@@ -76,6 +81,13 @@ export const RequestForm = () => {
       });
       return;
     }
+
+    console.log('Submitting receso:', {
+      user_id: user.user_id,
+      start_date: startDate,
+      end_date: endDate,
+      comments,
+    });
 
     mutation.mutate({
       user_id: user.user_id,
