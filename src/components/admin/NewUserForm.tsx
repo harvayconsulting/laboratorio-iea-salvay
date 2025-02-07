@@ -43,7 +43,7 @@ export const NewUserForm = () => {
     },
   });
 
-  if (!user) {
+  if (!user?.user_id) {
     return (
       <div className="text-red-500">
         Debes iniciar sesión para crear usuarios.

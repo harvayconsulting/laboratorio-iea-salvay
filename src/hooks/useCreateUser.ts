@@ -14,8 +14,24 @@ export const useCreateUser = () => {
 
   return useMutation({
     mutationFn: async (values: NewUserData) => {
-      if (!user) {
+      if (!user?.user_id) {
         throw new Error('Debes iniciar sesión para crear usuarios.');
+      }
+
+      // First verify if the current user is an admin
+      const { data: currentUser, error: verifyError } = await supabase
+        .from('ieasalvay_usuarios')
+        .select('user_type')
+        .eq('user_id', user.user_id)
+        .single();
+
+      if (verifyError) {
+        console.error('Error verificando permisos:', verifyError);
+        throw new Error('Error al verificar permisos de administrador');
+      }
+
+      if (currentUser?.user_type !== 'admin') {
+        throw new Error('Solo los administradores pueden crear usuarios');
       }
 
       // Check if username already exists
@@ -47,9 +63,6 @@ export const useCreateUser = () => {
 
       if (error) {
         console.error('Error creating user:', error);
-        if (error.code === '42501') {
-          throw new Error('No tienes permisos para crear usuarios.');
-        }
         throw new Error('Error al crear el usuario: ' + error.message);
       }
 
