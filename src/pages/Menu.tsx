@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
@@ -5,6 +6,12 @@ import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Mega
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+
+interface MenuLink {
+  label: string;
+  href?: string;
+  icon: React.ReactNode;
+}
 
 export const AppSidebar = () => {
   const { user, setUser } = useAuth();
@@ -16,7 +23,7 @@ export const AppSidebar = () => {
     navigate('/');
   };
 
-  const availableLinks = [
+  const availableLinks: MenuLink[] = [
     {
       label: "Capacitaciones",
       href: "/capacitaciones",
@@ -29,7 +36,7 @@ export const AppSidebar = () => {
     }
   ];
 
-  const adminOnlyLinks = [
+  const adminOnlyLinks: MenuLink[] = [
     {
       label: "NBU",
       href: "/nbu",
@@ -42,7 +49,7 @@ export const AppSidebar = () => {
     }
   ];
 
-  const disabledLinks = [
+  const disabledLinks: MenuLink[] = [
     {
       label: "Reporte Jornada",
       icon: <Book className="text-gray-300 h-5 w-5" />
@@ -102,13 +109,14 @@ export const AppSidebar = () => {
               <SidebarLink
                 key={idx}
                 link={{
-                  ...link,
-                  href: link.href || '#' // Use '#' for disabled links
+                  label: link.label,
+                  href: link.href || '#',
+                  icon: link.icon
                 }}
                 className={cn(
                   !link.href && "text-gray-300 cursor-not-allowed hover:bg-transparent"
                 )}
-                onClick={link.href ? undefined : (e) => e.preventDefault()}
+                onClick={link.href ? undefined : (e: React.MouseEvent) => e.preventDefault()}
               />
             ))}
           </div>
