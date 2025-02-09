@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/lib/auth';
 
 interface NotificationSettings {
   id: string;
@@ -16,21 +17,26 @@ interface NotificationSettings {
 
 export const NotificationsCard = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
   const [isActive, setIsActive] = useState(false);
 
-  const { data: settings, isLoading } = useQuery({
+  const { data: settings, isLoading, error } = useQuery({
     queryKey: ['notification-settings'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('email_notifications')
         .select('*')
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching notification settings:', error);
+        throw error;
+      }
       return data as NotificationSettings;
     },
+    enabled: !!user && user.user_type === 'admin',
   });
 
   useEffect(() => {
@@ -42,18 +48,20 @@ export const NotificationsCard = () => {
 
   const mutation = useMutation({
     mutationFn: async ({ isActive, email }: { isActive: boolean; email: string }) => {
+      if (!settings?.id) {
+        throw new Error('No notification settings found');
+      }
+
       const { data, error } = await supabase
         .from('email_notifications')
-        .upsert([
-          {
-            id: settings?.id || undefined,
-            is_active: isActive,
-            notification_email: email,
-            updated_at: new Date().toISOString(),
-          },
-        ])
+        .update({
+          is_active: isActive,
+          notification_email: email,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', settings.id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -75,6 +83,18 @@ export const NotificationsCard = () => {
     },
   });
 
+  if (!user || user.user_type !== 'admin') {
+    return null;
+  }
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>Error al cargar la configuración</div>;
+  }
+
   const handleSwitchChange = async (checked: boolean) => {
     setIsActive(checked);
     mutation.mutate({ isActive: checked, email });
@@ -84,10 +104,6 @@ export const NotificationsCard = () => {
     setEmail(newEmail);
     mutation.mutate({ isActive, email: newEmail });
   };
-
-  if (isLoading) {
-    return <div>Cargando...</div>;
-  }
 
   return (
     <Card>
