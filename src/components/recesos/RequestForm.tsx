@@ -44,7 +44,9 @@ export const RequestForm = () => {
       toast({
         title: 'Éxito',
         description: 'Receso solicitado con éxito',
+        variant: 'default',
       });
+      // Limpiar el formulario después de un éxito
       setStartDate('');
       setEndDate('');
       setComments('');
@@ -64,7 +66,6 @@ export const RequestForm = () => {
     console.log('Form submitted');
     
     if (!user?.user_id) {
-      console.error('No user found');
       toast({
         title: 'Error',
         description: 'Usuario no autenticado',
@@ -75,9 +76,8 @@ export const RequestForm = () => {
 
     const validationError = validateDates(startDate, endDate);
     if (validationError) {
-      console.log('Date validation error:', validationError);
       toast({
-        title: 'Error',
+        title: 'Error de validación',
         description: validationError,
         variant: 'destructive',
       });
