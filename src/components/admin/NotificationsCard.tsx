@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,6 +22,7 @@ export const NotificationsCard = () => {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
   const [isActive, setIsActive] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const { data: settings, isLoading, error } = useQuery({
     queryKey: ['notification-settings'],
@@ -43,6 +45,7 @@ export const NotificationsCard = () => {
     if (settings) {
       setIsActive(settings.is_active || false);
       setEmail(settings.notification_email || '');
+      setHasChanges(false);
     }
   }, [settings]);
 
@@ -72,6 +75,7 @@ export const NotificationsCard = () => {
         title: 'Éxito',
         description: 'Configuración de notificaciones actualizada',
       });
+      setHasChanges(false);
     },
     onError: (error) => {
       console.error('Error updating notification settings:', error);
@@ -95,20 +99,24 @@ export const NotificationsCard = () => {
     return <div>Error al cargar la configuración</div>;
   }
 
-  const handleSwitchChange = async (checked: boolean) => {
+  const handleSwitchChange = (checked: boolean) => {
     setIsActive(checked);
-    mutation.mutate({ isActive: checked, email });
+    setHasChanges(true);
   };
 
-  const handleEmailChange = async (newEmail: string) => {
+  const handleEmailChange = (newEmail: string) => {
     setEmail(newEmail);
-    mutation.mutate({ isActive, email: newEmail });
+    setHasChanges(true);
+  };
+
+  const handleSave = () => {
+    mutation.mutate({ isActive, email });
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Notificaciones</CardTitle>
+        <CardTitle>Notificaciones Email / Sistema</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
@@ -130,6 +138,12 @@ export const NotificationsCard = () => {
             disabled={!isActive}
           />
         </div>
+        <Button 
+          onClick={handleSave} 
+          disabled={!hasChanges || mutation.isPending}
+        >
+          {mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+        </Button>
       </CardContent>
     </Card>
   );
