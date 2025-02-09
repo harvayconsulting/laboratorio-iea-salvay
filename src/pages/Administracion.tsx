@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
@@ -5,6 +6,7 @@ import { AppSidebar } from './Menu';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserList } from '@/components/admin/UserList';
 import { NewUserForm } from '@/components/admin/NewUserForm';
+import { NotificationsCard } from '@/components/admin/NotificationsCard';
 
 const Administracion = () => {
   const { user } = useAuth();
@@ -43,6 +45,8 @@ const Administracion = () => {
                 <NewUserForm />
               </CardContent>
             </Card>
+
+            <NotificationsCard />
           </div>
         </div>
       </main>

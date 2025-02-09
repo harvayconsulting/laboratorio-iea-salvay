@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReceso } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
@@ -30,7 +30,7 @@ export const RequestForm = () => {
     const businessDays = differenceInBusinessDays(endDate, startDate);
     console.log('Business days calculated:', businessDays);
     
-    if (businessDays > 3) { // Changed from 4 to 3 since differenceInBusinessDays doesn't include the end date
+    if (businessDays > 3) {
       return 'El receso no puede exceder los 4 días hábiles';
     }
     
@@ -43,17 +43,17 @@ export const RequestForm = () => {
       queryClient.invalidateQueries({ queryKey: ['recesos'] });
       toast({
         title: 'Éxito',
-        description: 'Receso solicitado correctamente',
+        description: 'Receso solicitado con éxito',
       });
       setStartDate('');
       setEndDate('');
       setComments('');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error creating receso:', error);
       toast({
         title: 'Error',
-        description: 'No se pudo crear el receso. Por favor intente nuevamente.',
+        description: 'No es posible solicitar el receso, por favor consulte al administrador',
         variant: 'destructive',
       });
     },
@@ -138,4 +138,3 @@ export const RequestForm = () => {
     </form>
   );
 };
-
