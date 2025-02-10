@@ -43,7 +43,7 @@ export const RequestForm = () => {
       toast({
         title: 'Éxito',
         description: 'Receso solicitado con éxito',
-        variant: 'default',
+        style: { background: '#F2FCE2', border: '1px solid #c1e1b9' },
         duration: 3000,
       });
       setStartDate('');
@@ -51,11 +51,10 @@ export const RequestForm = () => {
       setComments('');
     },
     onError: (error: any) => {
-      console.error('Error creating receso:', error);
       toast({
         title: 'Error',
         description: 'No es posible solicitar el receso, por favor consulte al administrador',
-        variant: 'destructive',
+        style: { background: '#ea384c', color: 'white' },
         duration: 5000,
       });
     },
@@ -68,7 +67,7 @@ export const RequestForm = () => {
       toast({
         title: 'Error',
         description: 'Usuario no autenticado',
-        variant: 'destructive',
+        style: { background: '#ea384c', color: 'white' },
         duration: 3000,
       });
       return;
@@ -79,18 +78,11 @@ export const RequestForm = () => {
       toast({
         title: 'Error de validación',
         description: validationError,
-        variant: 'destructive',
+        style: { background: '#ea384c', color: 'white' },
         duration: 3000,
       });
       return;
     }
-
-    console.log('Submitting receso:', {
-      user_id: user.user_id,
-      start_date: startDate,
-      end_date: endDate,
-      comments,
-    });
 
     mutation.mutate({
       user_id: user.user_id,
