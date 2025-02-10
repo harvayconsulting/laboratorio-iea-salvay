@@ -28,7 +28,6 @@ export const RequestForm = () => {
     }
     
     const businessDays = differenceInBusinessDays(endDate, startDate);
-    console.log('Business days calculated:', businessDays);
     
     if (businessDays > 3) {
       return 'El receso no puede exceder los 4 días hábiles';
@@ -45,8 +44,8 @@ export const RequestForm = () => {
         title: 'Éxito',
         description: 'Receso solicitado con éxito',
         variant: 'default',
+        duration: 3000,
       });
-      // Limpiar el formulario después de un éxito
       setStartDate('');
       setEndDate('');
       setComments('');
@@ -57,19 +56,20 @@ export const RequestForm = () => {
         title: 'Error',
         description: 'No es posible solicitar el receso, por favor consulte al administrador',
         variant: 'destructive',
+        duration: 5000,
       });
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted');
     
     if (!user?.user_id) {
       toast({
         title: 'Error',
         description: 'Usuario no autenticado',
         variant: 'destructive',
+        duration: 3000,
       });
       return;
     }
@@ -80,6 +80,7 @@ export const RequestForm = () => {
         title: 'Error de validación',
         description: validationError,
         variant: 'destructive',
+        duration: 3000,
       });
       return;
     }

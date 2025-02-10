@@ -8,6 +8,7 @@ import { RecesosTable } from '@/components/recesos/RecesosTable';
 import { RecesosChart } from '@/components/recesos/RecesosChart';
 import { RequestForm } from '@/components/recesos/RequestForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Toaster } from '@/components/ui/toaster';
 
 const Recesos = () => {
   const { user } = useAuth();
@@ -34,7 +35,7 @@ const Recesos = () => {
             <RecesosChart />
           </div>
           
-          {/* Request form section - same width as the two frames above combined */}
+          {/* Request form section */}
           <div className="mb-6">
             <Card>
               <CardHeader>
@@ -59,6 +60,7 @@ const Recesos = () => {
           </div>
         </div>
       </main>
+      <Toaster />
     </div>
   );
 };
