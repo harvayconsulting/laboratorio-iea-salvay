@@ -3,17 +3,17 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
 import { getUser } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { Toaster } from '@/components/ui/toaster';
+import { useCustomToast } from '@/hooks/useCustomToast';
 
 export const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { showToast } = useCustomToast();
   const { setUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,28 +24,13 @@ export const LoginForm = () => {
       const user = await getUser(username, password);
       if (user) {
         setUser(user);
-        toast({
-          title: 'Bienvenido',
-          description: 'Inicio de sesión exitoso',
-          style: { background: '#F2FCE2', border: '1px solid #c1e1b9' },
-          duration: 3000,
-        });
+        showToast('Bienvenido', 'Inicio de sesión exitoso', 'success');
         navigate('/dashboard');
       } else {
-        toast({
-          title: 'Error',
-          description: 'Usuario o contraseña incorrectos',
-          style: { background: '#ea384c', color: 'white' },
-          duration: 3000,
-        });
+        showToast('Error', 'Usuario o contraseña incorrectos', 'error');
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Credenciales inválidas',
-        style: { background: '#ea384c', color: 'white' },
-        duration: 3000,
-      });
+      showToast('Error', 'Credenciales inválidas', 'error');
     } finally {
       setLoading(false);
     }

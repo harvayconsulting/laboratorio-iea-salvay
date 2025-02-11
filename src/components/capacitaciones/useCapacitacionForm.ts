@@ -1,12 +1,14 @@
+
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { CapacitacionFormValues } from "./schema";
 import { UseFormReset } from "react-hook-form";
+import { useCustomToast } from "@/hooks/useCustomToast";
 
 export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>) => {
-  const { toast } = useToast();
+  const { showToast } = useCustomToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -15,10 +17,6 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
       if (!user?.user_id) {
         throw new Error("Usuario no autenticado");
       }
-
-      // Log the user and values for debugging
-      console.log("Current user:", user);
-      console.log("Form values:", values);
 
       const { data, error } = await supabase
         .from("ieasalvay_capacitaciones")
@@ -33,33 +31,32 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
           cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
           costo: values.costo ? parseFloat(values.costo) : null,
           estado: values.estado,
-          user_id: user.user_id, // Explicitly set the user_id
+          user_id: user.user_id,
         })
         .select()
         .single();
 
       if (error) {
-        console.error("Supabase error:", error);
         throw error;
       }
 
       return data;
     },
     onSuccess: () => {
-      toast({
-        title: "Capacitación creada",
-        description: "La capacitación ha sido registrada exitosamente.",
-      });
+      showToast(
+        'Capacitación creada',
+        'La capacitación ha sido registrada exitosamente',
+        'success'
+      );
       reset();
-      queryClient.invalidateQueries({ queryKey: ["capacitaciones"] });
+      queryClient.invalidateQueries({ queryKey: ['capacitaciones'] });
     },
     onError: (error) => {
-      console.error("Error creating capacitacion:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo crear la capacitación. Por favor, intente nuevamente.",
-        variant: "destructive",
-      });
+      showToast(
+        'Error',
+        'No se pudo crear la capacitación. Por favor, intente nuevamente.',
+        'error'
+      );
     },
   });
 

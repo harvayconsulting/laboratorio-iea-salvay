@@ -3,18 +3,18 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createReceso } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { differenceInBusinessDays, isBefore, parseISO } from 'date-fns';
+import { useCustomToast } from '@/hooks/useCustomToast';
 
 export const RequestForm = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [comments, setComments] = useState('');
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { showToast } = useCustomToast();
   const queryClient = useQueryClient();
 
   const validateDates = (start: string, end: string): string | null => {
@@ -40,23 +40,18 @@ export const RequestForm = () => {
     mutationFn: createReceso,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recesos'] });
-      toast({
-        title: 'Éxito',
-        description: 'Receso solicitado con éxito',
-        style: { background: '#F2FCE2', border: '1px solid #c1e1b9' },
-        duration: 3000,
-      });
+      showToast('Éxito', 'Receso solicitado con éxito', 'success');
       setStartDate('');
       setEndDate('');
       setComments('');
     },
-    onError: (error: any) => {
-      toast({
-        title: 'Error',
-        description: 'No es posible solicitar el receso, por favor consulte al administrador',
-        style: { background: '#ea384c', color: 'white' },
-        duration: 5000,
-      });
+    onError: () => {
+      showToast(
+        'Error',
+        'No es posible solicitar el receso, por favor consulte al administrador',
+        'error',
+        5000
+      );
     },
   });
 
@@ -64,23 +59,13 @@ export const RequestForm = () => {
     e.preventDefault();
     
     if (!user?.user_id) {
-      toast({
-        title: 'Error',
-        description: 'Usuario no autenticado',
-        style: { background: '#ea384c', color: 'white' },
-        duration: 3000,
-      });
+      showToast('Error', 'Usuario no autenticado', 'error');
       return;
     }
 
     const validationError = validateDates(startDate, endDate);
     if (validationError) {
-      toast({
-        title: 'Error de validación',
-        description: validationError,
-        style: { background: '#ea384c', color: 'white' },
-        duration: 3000,
-      });
+      showToast('Error de validación', validationError, 'error');
       return;
     }
 
