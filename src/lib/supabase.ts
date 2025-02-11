@@ -29,9 +29,13 @@ export const getUser = async (username: string, password: string) => {
     .select('*')
     .eq('user_name', username)
     .eq('password', password)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
+  
+  // Return null if no user was found
+  if (!data) return null;
+  
   return data as User;
 };
 
