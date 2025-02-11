@@ -37,6 +37,7 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
         .single();
 
       if (error) {
+        console.error('Error creating capacitacion:', error);
         throw error;
       }
 
@@ -52,6 +53,7 @@ export const useCapacitacionForm = (reset: UseFormReset<CapacitacionFormValues>)
       queryClient.invalidateQueries({ queryKey: ['capacitaciones'] });
     },
     onError: (error) => {
+      console.error('Error in mutation:', error);
       showToast(
         'Error',
         'No se pudo crear la capacitación. Por favor, intente nuevamente.',

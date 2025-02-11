@@ -1,3 +1,4 @@
+
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -11,6 +12,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
+import { useCustomToast } from "@/hooks/useCustomToast";
 
 interface Capacitacion {
   id: string;
@@ -30,11 +32,11 @@ interface Capacitacion {
 
 export function CapacitacionesTable() {
   const { user } = useAuth();
+  const { showToast } = useCustomToast();
 
   const { data: capacitaciones, isLoading } = useQuery({
     queryKey: ["capacitaciones"],
     queryFn: async () => {
-      // If user is not admin, only show their capacitaciones
       let query = supabase
         .from("ieasalvay_capacitaciones")
         .select("*")
@@ -45,7 +47,17 @@ export function CapacitacionesTable() {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Error fetching capacitaciones:', error);
+        showToast(
+          'Error',
+          'No se pudieron cargar las capacitaciones. Por favor, intente nuevamente.',
+          'error'
+        );
+        throw error;
+      }
+      
       return data as Capacitacion[];
     },
     enabled: !!user?.user_id,
@@ -68,6 +80,16 @@ export function CapacitacionesTable() {
       default:
         return "default";
     }
+  };
+
+  const formatCurrency = (value: number | null) => {
+    if (value === null) return "-";
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
   };
 
   return (
@@ -103,14 +125,7 @@ export function CapacitacionesTable() {
                 </Badge>
               </TableCell>
               <TableCell>{capacitacion.cantidad_horas || "-"}</TableCell>
-              <TableCell>
-                {capacitacion.costo
-                  ? new Intl.NumberFormat("es-AR", {
-                      style: "currency",
-                      currency: "ARS",
-                    }).format(capacitacion.costo)
-                  : "-"}
-              </TableCell>
+              <TableCell>{formatCurrency(capacitacion.costo)}</TableCell>
             </TableRow>
           ))}
           {(!capacitaciones || capacitaciones.length === 0) && (
