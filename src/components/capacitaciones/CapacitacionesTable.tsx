@@ -1,4 +1,3 @@
-
 import { format } from "date-fns";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -21,11 +20,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { CapacitacionForm } from "./CapacitacionForm";
+import { CapacitacionFormValues } from "./schema";
 
 interface Capacitacion {
   id: string;
@@ -111,11 +110,24 @@ export function CapacitacionesTable() {
   });
 
   const { mutate: updateCapacitacion } = useMutation({
-    mutationFn: async (capacitacion: Capacitacion) => {
+    mutationFn: async (values: CapacitacionFormValues) => {
+      if (!capacitacionToEdit) return;
+
       const { error } = await supabase
         .from("ieasalvay_capacitaciones")
-        .update(capacitacion)
-        .eq("id", capacitacion.id);
+        .update({
+          ...capacitacionToEdit,
+          nombre_curso: values.nombre_curso,
+          programa: values.programa || null,
+          entidad: values.entidad,
+          documentacion_impacto: values.documentacion_impacto || null,
+          fecha_inicio: values.fecha_inicio,
+          fecha_conclusion: values.fecha_conclusion || null,
+          cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
+          costo: values.costo ? parseFloat(values.costo) : null,
+          estado: values.estado,
+        })
+        .eq("id", capacitacionToEdit.id);
 
       if (error) throw error;
     },
@@ -157,6 +169,20 @@ export function CapacitacionesTable() {
     if (capacitacionToDelete) {
       deleteCapacitacion(capacitacionToDelete);
     }
+  };
+
+  const formatForForm = (capacitacion: Capacitacion): CapacitacionFormValues => {
+    return {
+      nombre_curso: capacitacion.nombre_curso,
+      programa: capacitacion.programa || "",
+      entidad: capacitacion.entidad,
+      documentacion_impacto: capacitacion.documentacion_impacto || "",
+      fecha_inicio: capacitacion.fecha_inicio,
+      fecha_conclusion: capacitacion.fecha_conclusion || "",
+      cantidad_horas: capacitacion.cantidad_horas?.toString() || "",
+      costo: capacitacion.costo?.toString() || "",
+      estado: capacitacion.estado,
+    };
   };
 
   const getEstadoBadgeVariant = (estado: Capacitacion["estado"]) => {
@@ -279,7 +305,7 @@ export function CapacitacionesTable() {
           </DialogHeader>
           {capacitacionToEdit && (
             <CapacitacionForm 
-              initialData={capacitacionToEdit}
+              initialData={formatForForm(capacitacionToEdit)}
               onSubmit={updateCapacitacion}
               onCancel={() => setIsEditDialogOpen(false)}
             />
