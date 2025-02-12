@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { CapacitacionActionsCell } from "./CapacitacionesActionsCell";
 import { DeleteCapacitacionDialog } from "./DeleteCapacitacionDialog";
 import { EditCapacitacionDialog } from "./EditCapacitacionDialog";
-import { useCapacitacionesTable } from "./useCapacitacionesTable";
+import { useCapacitacionesTable, type Capacitacion } from "./useCapacitacionesTable";
 
 export function CapacitacionesTable() {
   const {
