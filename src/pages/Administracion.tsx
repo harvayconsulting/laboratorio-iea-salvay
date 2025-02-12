@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { AppSidebar } from './Menu';
+import { AppSidebar } from '@/components/layout/AppSidebar';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserList } from '@/components/admin/UserList';
 import { NewUserForm } from '@/components/admin/NewUserForm';

@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { CapacitacionesTable } from "@/components/capacitaciones/CapacitacionesTable";
 import { CapacitacionForm } from "@/components/capacitaciones/CapacitacionForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AppSidebar } from "./Menu";
+import { AppSidebar } from '@/components/layout/AppSidebar';
 
 const Capacitaciones = () => {
   const { user } = useAuth();

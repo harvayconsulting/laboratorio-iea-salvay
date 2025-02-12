@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { AppSidebar } from './Menu';
+import { AppSidebar } from '@/components/layout/AppSidebar';
 import { DashboardStats as RecesosStats } from '@/components/recesos/RecesosStats';
 import { RecesosTable } from '@/components/recesos/RecesosTable';
 import { RecesosChart } from '@/components/recesos/RecesosChart';

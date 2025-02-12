@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { AppSidebar } from './Menu';
+import { AppSidebar } from '@/components/layout/AppSidebar';
 
 const ControlStock = () => {
   const { user } = useAuth();
