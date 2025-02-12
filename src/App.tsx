@@ -25,11 +25,13 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  const { user } = useAuth();
+
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route 
             path="/administracion" 
@@ -49,6 +51,7 @@ function App() {
           />
           <Route path="/recesos" element={<Recesos />} />
           <Route path="/capacitaciones" element={<Capacitaciones />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
       <Toaster />
