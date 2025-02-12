@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getUser } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
-import { Toaster } from '@/components/ui/toaster';
 import { useCustomToast } from '@/hooks/useCustomToast';
 
 export const LoginForm = () => {
@@ -24,8 +23,9 @@ export const LoginForm = () => {
       const user = await getUser(username, password);
       if (user) {
         setUser(user);
+        // Show toast only on successful login
         showToast('Bienvenido', 'Inicio de sesión exitoso', 'success');
-        navigate('/dashboard');
+        navigate('/menu');
       } else {
         showToast('Error', 'Usuario o contraseña incorrectos', 'error');
       }
@@ -37,29 +37,26 @@ export const LoginForm = () => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
-        <div className="space-y-2">
-          <Input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-        </Button>
-      </form>
-      <Toaster />
-    </>
+    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
+      <div className="space-y-2">
+        <Input
+          type="text"
+          placeholder="Usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+      </Button>
+    </form>
   );
 };

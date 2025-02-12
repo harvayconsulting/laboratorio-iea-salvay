@@ -8,7 +8,6 @@ import { RecesosTable } from '@/components/recesos/RecesosTable';
 import { RecesosChart } from '@/components/recesos/RecesosChart';
 import { RequestForm } from '@/components/recesos/RequestForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Toaster } from '@/components/ui/toaster';
 
 const Recesos = () => {
   const { user } = useAuth();
@@ -60,7 +59,6 @@ const Recesos = () => {
           </div>
         </div>
       </main>
-      <Toaster />
     </div>
   );
 };
