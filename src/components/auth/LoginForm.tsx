@@ -23,9 +23,8 @@ export const LoginForm = () => {
       const user = await getUser(username, password);
       if (user) {
         setUser(user);
-        // Show toast only on successful login
         showToast('Bienvenido', 'Inicio de sesión exitoso', 'success');
-        navigate('/menu');
+        navigate('/dashboard');
       } else {
         showToast('Error', 'Usuario o contraseña incorrectos', 'error');
       }

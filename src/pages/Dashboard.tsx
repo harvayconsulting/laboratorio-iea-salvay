@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
@@ -6,6 +5,11 @@ import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Mega
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { RecesosChart } from '@/components/recesos/RecesosChart';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface MenuLink {
   label: string;
@@ -141,9 +145,44 @@ export const AppSidebar = () => {
   );
 };
 
-const Menu = () => {
+const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Query para obtener las capacitaciones
+  const { data: capacitaciones } = useQuery({
+    queryKey: ['capacitaciones-dashboard'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ieasalvay_capacitaciones')
+        .select(`
+          *,
+          user:user_id (
+            user_name
+          )
+        `);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Procesar datos para el gráfico de capacitaciones
+  const capacitacionesData = capacitaciones?.reduce((acc: any[], cap: any) => {
+    const month = new Date(cap.fecha_inicio).toLocaleDateString('es-AR', { month: 'short' });
+    const userName = cap.user?.user_name.toLowerCase();
+
+    const existingMonth = acc.find(item => item.month === month);
+    if (existingMonth) {
+      existingMonth[userName] = (existingMonth[userName] || 0) + 1;
+    } else {
+      acc.push({
+        month,
+        [userName]: 1,
+      });
+    }
+    return acc;
+  }, []) || [];
 
   useEffect(() => {
     if (!user) {
@@ -157,19 +196,80 @@ const Menu = () => {
     <div className="min-h-screen flex bg-white">
       <AppSidebar />
       <main className="flex-1 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-[1.1rem] text-muted-foreground">
-              Sistema para la Administración del
-            </p>
-            <h1 className="text-2xl font-bold tracking-tighter mb-8">
-              Laboratorio IEA Salvay
-            </h1>
-            <img 
-              src="/lovable-uploads/10bff8d8-807c-4618-a09c-4db8ab362ee6.png" 
-              alt="Logo IEA Salvay" 
-              className="h-36 w-auto mx-auto"
-            />
+        <div className="container mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Frame 1: Gráfico de Recesos */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recesos por Usuario</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px]">
+                <RecesosChart />
+              </CardContent>
+            </Card>
+
+            {/* Frame 2: Gráfico de Capacitaciones */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Capacitaciones por Usuario</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px]">
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={capacitacionesData}>
+                    <XAxis 
+                      dataKey="month"
+                      tick={{ fontSize: 12 }}
+                      interval={0}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      label={{ 
+                        value: 'Cantidad', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        style: { fontSize: 12 }
+                      }}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="mickaela"
+                      name="Mickaela"
+                      fill="hsl(var(--chart-1))"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="sasha"
+                      name="Sasha"
+                      fill="hsl(var(--chart-2))"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Frame 3: Placeholder para futuros gráficos */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Próximamente</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Contenido en desarrollo
+              </CardContent>
+            </Card>
+
+            {/* Frame 4: Placeholder para futuros gráficos */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Próximamente</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Contenido en desarrollo
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
@@ -177,4 +277,4 @@ const Menu = () => {
   );
 };
 
-export default Menu;
+export default Dashboard;

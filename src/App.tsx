@@ -1,8 +1,9 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
+import { Toaster } from '@/components/ui/toaster';
 import Login from './pages/Login';
-import Menu from './pages/Menu';
+import Dashboard from './pages/Dashboard';
 import Administracion from './pages/Administracion';
 import NBU from './pages/NBU';
 import Recesos from './pages/Recesos';
@@ -17,7 +18,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (user.user_type !== 'admin') {
-    return <Navigate to="/menu" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
@@ -25,30 +26,33 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route 
-          path="/administracion" 
-          element={
-            <AdminRoute>
-              <Administracion />
-            </AdminRoute>
-          } 
-        />
-        <Route 
-          path="/nbu" 
-          element={
-            <AdminRoute>
-              <NBU />
-            </AdminRoute>
-          } 
-        />
-        <Route path="/recesos" element={<Recesos />} />
-        <Route path="/capacitaciones" element={<Capacitaciones />} />
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route 
+            path="/administracion" 
+            element={
+              <AdminRoute>
+                <Administracion />
+              </AdminRoute>
+            } 
+          />
+          <Route 
+            path="/nbu" 
+            element={
+              <AdminRoute>
+                <NBU />
+              </AdminRoute>
+            } 
+          />
+          <Route path="/recesos" element={<Recesos />} />
+          <Route path="/capacitaciones" element={<Capacitaciones />} />
+        </Routes>
+      </Router>
+      <Toaster />
+    </>
   );
 }
 
