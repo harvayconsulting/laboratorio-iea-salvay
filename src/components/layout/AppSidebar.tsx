@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut, Settings2 } from 'lucide-react';
+import { Book, ChartBar, Activity, Users, Package, MessageSquare, Database, Megaphone, User, GraduationCap, CalendarDays, LogOut, Settings2, LayoutDashboard } from 'lucide-react';
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -24,6 +24,11 @@ export const AppSidebar = () => {
   };
 
   const availableLinks: MenuLink[] = [
+    {
+      label: "Dashboard",
+      href: "/dashboard",
+      icon: <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+    },
     {
       label: "Capacitaciones",
       href: "/capacitaciones",

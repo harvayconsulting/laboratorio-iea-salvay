@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth';
 import { AppSidebar } from '@/components/layout/AppSidebar';
 import { RecesosChart } from '@/components/recesos/RecesosChart';
 import { CapacitacionesChart } from '@/components/capacitaciones/CapacitacionesChart';
+import { NBUChart } from '@/components/nbu/NBUChart';
 import { PlaceholderCard } from '@/components/dashboard/PlaceholderCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -41,8 +42,10 @@ const Dashboard = () => {
             {/* Frame 2: Gráfico de Capacitaciones */}
             <CapacitacionesChart />
 
-            {/* Frame 3 & 4: Placeholders */}
-            <PlaceholderCard />
+            {/* Frame 3: Gráfico de NBU */}
+            <NBUChart />
+
+            {/* Frame 4: Placeholder */}
             <PlaceholderCard />
           </div>
         </div>
