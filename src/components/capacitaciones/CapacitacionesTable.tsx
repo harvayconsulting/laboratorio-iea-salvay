@@ -1,5 +1,5 @@
+
 import { format } from "date-fns";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -8,182 +8,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
-import { useCustomToast } from "@/hooks/useCustomToast";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { useState } from "react";
-import { CapacitacionForm } from "./CapacitacionForm";
-import { CapacitacionFormValues } from "./schema";
-
-interface Capacitacion {
-  id: string;
-  nombre_curso: string;
-  programa: string | null;
-  entidad: string;
-  nombre_profesional: string;
-  documentacion_impacto: string | null;
-  fecha_inicio: string;
-  fecha_conclusion: string | null;
-  cantidad_horas: number | null;
-  costo: number | null;
-  estado: "Pendiente" | "En curso" | "Concluido" | "Cancelado";
-  user_id: string;
-  created_at: string;
-}
+import { CapacitacionActionsCell } from "./CapacitacionesActionsCell";
+import { DeleteCapacitacionDialog } from "./DeleteCapacitacionDialog";
+import { EditCapacitacionDialog } from "./EditCapacitacionDialog";
+import { useCapacitacionesTable } from "./useCapacitacionesTable";
 
 export function CapacitacionesTable() {
-  const { user } = useAuth();
-  const { showToast } = useCustomToast();
-  const queryClient = useQueryClient();
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [capacitacionToDelete, setCapacitacionToDelete] = useState<string | null>(null);
-  const [capacitacionToEdit, setCapacitacionToEdit] = useState<Capacitacion | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
-  const { data: capacitaciones, isLoading } = useQuery({
-    queryKey: ["capacitaciones"],
-    queryFn: async () => {
-      let query = supabase
-        .from("ieasalvay_capacitaciones")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (user?.user_type !== "admin") {
-        query = query.eq("user_id", user?.user_id);
-      }
-
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error('Error fetching capacitaciones:', error);
-        showToast(
-          'Error',
-          'No se pudieron cargar las capacitaciones. Por favor, intente nuevamente.',
-          'error'
-        );
-        throw error;
-      }
-      
-      return data as Capacitacion[];
-    },
-    enabled: !!user?.user_id,
-  });
-
-  const { mutate: deleteCapacitacion } = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("ieasalvay_capacitaciones")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      showToast(
-        'Capacitación eliminada',
-        'La capacitación ha sido eliminada exitosamente',
-        'success'
-      );
-      queryClient.invalidateQueries({ queryKey: ["capacitaciones"] });
-      setIsDeleteDialogOpen(false);
-      setCapacitacionToDelete(null);
-    },
-    onError: (error) => {
-      console.error('Error deleting capacitacion:', error);
-      showToast(
-        'Error',
-        'No se pudo eliminar la capacitación. Por favor, intente nuevamente.',
-        'error'
-      );
-    },
-  });
-
-  const { mutate: updateCapacitacion } = useMutation({
-    mutationFn: async (values: CapacitacionFormValues) => {
-      if (!capacitacionToEdit) return;
-
-      const { error } = await supabase
-        .from("ieasalvay_capacitaciones")
-        .update({
-          ...capacitacionToEdit,
-          nombre_curso: values.nombre_curso,
-          programa: values.programa || null,
-          entidad: values.entidad,
-          documentacion_impacto: values.documentacion_impacto || null,
-          fecha_inicio: values.fecha_inicio,
-          fecha_conclusion: values.fecha_conclusion || null,
-          cantidad_horas: values.cantidad_horas ? parseInt(values.cantidad_horas) : null,
-          costo: values.costo ? parseFloat(values.costo) : null,
-          estado: values.estado,
-        })
-        .eq("id", capacitacionToEdit.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      showToast(
-        'Capacitación actualizada',
-        'La capacitación ha sido actualizada exitosamente',
-        'success'
-      );
-      queryClient.invalidateQueries({ queryKey: ["capacitaciones"] });
-      setIsEditDialogOpen(false);
-      setCapacitacionToEdit(null);
-    },
-    onError: (error) => {
-      console.error('Error updating capacitacion:', error);
-      showToast(
-        'Error',
-        'No se pudo actualizar la capacitación. Por favor, intente nuevamente.',
-        'error'
-      );
-    },
-  });
+  const {
+    capacitaciones,
+    isLoading,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    capacitacionToEdit,
+    handleDelete,
+    handleEdit,
+    confirmDelete,
+    updateCapacitacion,
+    formatForForm,
+  } = useCapacitacionesTable();
 
   if (isLoading) {
     return <div>Cargando capacitaciones...</div>;
   }
-
-  const handleDelete = (id: string) => {
-    setCapacitacionToDelete(id);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleEdit = (capacitacion: Capacitacion) => {
-    setCapacitacionToEdit(capacitacion);
-    setIsEditDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (capacitacionToDelete) {
-      deleteCapacitacion(capacitacionToDelete);
-    }
-  };
-
-  const formatForForm = (capacitacion: Capacitacion): CapacitacionFormValues => {
-    return {
-      nombre_curso: capacitacion.nombre_curso,
-      programa: capacitacion.programa || "",
-      entidad: capacitacion.entidad,
-      documentacion_impacto: capacitacion.documentacion_impacto || "",
-      fecha_inicio: capacitacion.fecha_inicio,
-      fecha_conclusion: capacitacion.fecha_conclusion || "",
-      cantidad_horas: capacitacion.cantidad_horas?.toString() || "",
-      costo: capacitacion.costo?.toString() || "",
-      estado: capacitacion.estado,
-    };
-  };
 
   const getEstadoBadgeVariant = (estado: Capacitacion["estado"]) => {
     switch (estado) {
@@ -247,22 +96,10 @@ export function CapacitacionesTable() {
                 <TableCell>{capacitacion.cantidad_horas || "-"}</TableCell>
                 <TableCell>{formatCurrency(capacitacion.costo)}</TableCell>
                 <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(capacitacion)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(capacitacion.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <CapacitacionActionsCell
+                    onEdit={() => handleEdit(capacitacion)}
+                    onDelete={() => handleDelete(capacitacion.id)}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -277,41 +114,18 @@ export function CapacitacionesTable() {
         </Table>
       </div>
 
-      {/* Delete Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirmar Eliminación</DialogTitle>
-            <DialogDescription>
-              ¿Está seguro que desea eliminar esta capacitación? Esta acción no se puede deshacer.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancelar
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Eliminar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteCapacitacionDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={confirmDelete}
+      />
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Editar Capacitación</DialogTitle>
-          </DialogHeader>
-          {capacitacionToEdit && (
-            <CapacitacionForm 
-              initialData={formatForForm(capacitacionToEdit)}
-              onSubmit={updateCapacitacion}
-              onCancel={() => setIsEditDialogOpen(false)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <EditCapacitacionDialog
+        isOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        initialData={capacitacionToEdit ? formatForForm(capacitacionToEdit) : null}
+        onSubmit={updateCapacitacion}
+      />
     </>
   );
 }
