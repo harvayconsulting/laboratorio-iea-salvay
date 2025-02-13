@@ -4,11 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-interface NBUData {
-  name: string;
-  value: number;
-}
-
 export function NBUChart() {
   const { data: nbuData, isLoading, error } = useQuery({
     queryKey: ['nbu-chart'],
@@ -27,8 +22,8 @@ export function NBUChart() {
       if (error) throw error;
       if (!data || data.length === 0) return [];
 
-      // Get most recent NBU for each provider and format the data
-      const latestNBUs = data.reduce<NBUData[]>((acc, curr) => {
+      // Get most recent NBU for each provider
+      const latestNBUs = data.reduce((acc: any[], curr) => {
         if (!curr.obrasocial?.nameprovider) return acc;
         
         const existingProvider = acc.find(
@@ -36,19 +31,14 @@ export function NBUChart() {
         );
         
         if (!existingProvider) {
-          // Ensure value is a valid number and format it appropriately
-          const numericValue = typeof curr.value === 'string' ? parseFloat(curr.value) : Number(curr.value);
-          if (!isNaN(numericValue)) {
-            acc.push({
-              name: curr.obrasocial.nameprovider,
-              value: numericValue
-            });
-          }
+          acc.push({
+            name: curr.obrasocial.nameprovider,
+            value: Number(curr.value) || 0
+          });
         }
         return acc;
       }, []);
 
-      // Sort by value in descending order
       return latestNBUs.sort((a, b) => b.value - a.value);
     },
   });
@@ -100,18 +90,17 @@ export function NBUChart() {
       </CardHeader>
       <CardContent className="h-[300px]">
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={nbuData} margin={{ top: 20, right: 30, left: 60, bottom: 80 }}>
+          <BarChart data={nbuData}>
             <XAxis 
               dataKey="name"
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 12 }}
               interval={0}
               angle={-45}
               textAnchor="end"
-              height={80}
+              height={60}
             />
             <YAxis
               tick={{ fontSize: 12 }}
-              tickFormatter={(value) => `$${value.toLocaleString()}`}
               label={{ 
                 value: 'Valor NBU ($)', 
                 angle: -90, 
@@ -119,9 +108,7 @@ export function NBUChart() {
                 style: { fontSize: 12 }
               }}
             />
-            <Tooltip 
-              formatter={(value: number) => [`$${value.toLocaleString()}`, 'Valor NBU']}
-            />
+            <Tooltip />
             <Bar
               dataKey="value"
               fill="hsl(var(--primary))"
