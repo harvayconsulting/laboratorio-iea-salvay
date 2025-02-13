@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 export function NBUChart() {
-  const { data: nbuData, isLoading } = useQuery({
+  const { data: nbuData, isLoading, error } = useQuery({
     queryKey: ['nbu-chart'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -20,17 +20,20 @@ export function NBUChart() {
         .order('effective_date', { ascending: false });
 
       if (error) throw error;
+      if (!data || data.length === 0) return [];
 
       // Get most recent NBU for each provider
       const latestNBUs = data.reduce((acc: any[], curr) => {
+        if (!curr.obrasocial?.nameprovider) return acc;
+        
         const existingProvider = acc.find(
-          item => item.obrasocial.nameprovider === curr.obrasocial.nameprovider
+          item => item.name === curr.obrasocial.nameprovider
         );
         
         if (!existingProvider) {
           acc.push({
             name: curr.obrasocial.nameprovider,
-            value: curr.value
+            value: Number(curr.value) || 0
           });
         }
         return acc;
@@ -40,7 +43,45 @@ export function NBUChart() {
     },
   });
 
-  if (isLoading) return <div>Cargando...</div>;
+  if (error) {
+    console.error("Error loading NBU data:", error);
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Valores NBU por Obra Social</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[300px] flex items-center justify-center">
+          <p className="text-red-500">Error al cargar los datos</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Valores NBU por Obra Social</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[300px] flex items-center justify-center">
+          <p>Cargando...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!nbuData || nbuData.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Valores NBU por Obra Social</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[300px] flex items-center justify-center">
+          <p>No hay datos disponibles</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
