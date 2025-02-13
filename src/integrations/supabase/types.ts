@@ -514,6 +514,8 @@ export type Database = {
         | "SANCOR_1000"
         | "SIPSSA"
         | "SWISS_MEDICAL"
+      problema_categoria: "autorizacion" | "paciente" | "reactivos"
+      problema_estado: "resuelto" | "pendiente" | "impacto aceptado"
       user_type: "admin" | "bioquimica"
     }
     CompositeTypes: {
