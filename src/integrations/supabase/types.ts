@@ -74,6 +74,47 @@ export type Database = {
           },
         ]
       }
+      ieasalvay_bioquimicas_problemas: {
+        Row: {
+          archivos_urls: string[] | null
+          categoria: string
+          created_at: string | null
+          descripcion: string
+          estado: string
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          archivos_urls?: string[] | null
+          categoria: string
+          created_at?: string | null
+          descripcion: string
+          estado: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          archivos_urls?: string[] | null
+          categoria?: string
+          created_at?: string | null
+          descripcion?: string
+          estado?: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ieasalvay_bioquimicas_problemas_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ieasalvay_usuarios"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       ieasalvay_capacitaciones: {
         Row: {
           cantidad_horas: number | null
