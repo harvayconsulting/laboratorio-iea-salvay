@@ -4,6 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
+interface NBUData {
+  name: string;
+  value: number;
+}
+
 export function NBUChart() {
   const { data: nbuData, isLoading, error } = useQuery({
     queryKey: ['nbu-chart'],
@@ -23,7 +28,7 @@ export function NBUChart() {
       if (!data || data.length === 0) return [];
 
       // Get most recent NBU for each provider and format the data
-      const latestNBUs = data.reduce((acc: any[], curr) => {
+      const latestNBUs = data.reduce<NBUData[]>((acc, curr) => {
         if (!curr.obrasocial?.nameprovider) return acc;
         
         const existingProvider = acc.find(
@@ -32,7 +37,7 @@ export function NBUChart() {
         
         if (!existingProvider) {
           // Ensure value is a valid number and format it appropriately
-          const numericValue = parseFloat(curr.value);
+          const numericValue = typeof curr.value === 'string' ? parseFloat(curr.value) : Number(curr.value);
           if (!isNaN(numericValue)) {
             acc.push({
               name: curr.obrasocial.nameprovider,
