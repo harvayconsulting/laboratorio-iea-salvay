@@ -22,7 +22,7 @@ export function NBUChart() {
       if (error) throw error;
       if (!data || data.length === 0) return [];
 
-      // Get most recent NBU for each provider
+      // Get most recent NBU for each provider and format the data
       const latestNBUs = data.reduce((acc: any[], curr) => {
         if (!curr.obrasocial?.nameprovider) return acc;
         
@@ -31,14 +31,19 @@ export function NBUChart() {
         );
         
         if (!existingProvider) {
-          acc.push({
-            name: curr.obrasocial.nameprovider,
-            value: Number(curr.value) || 0
-          });
+          // Ensure value is a valid number and format it appropriately
+          const numericValue = parseFloat(curr.value);
+          if (!isNaN(numericValue)) {
+            acc.push({
+              name: curr.obrasocial.nameprovider,
+              value: numericValue
+            });
+          }
         }
         return acc;
       }, []);
 
+      // Sort by value in descending order
       return latestNBUs.sort((a, b) => b.value - a.value);
     },
   });
@@ -90,17 +95,18 @@ export function NBUChart() {
       </CardHeader>
       <CardContent className="h-[300px]">
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={nbuData}>
+          <BarChart data={nbuData} margin={{ top: 20, right: 30, left: 60, bottom: 80 }}>
             <XAxis 
               dataKey="name"
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 10 }}
               interval={0}
               angle={-45}
               textAnchor="end"
-              height={60}
+              height={80}
             />
             <YAxis
               tick={{ fontSize: 12 }}
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
               label={{ 
                 value: 'Valor NBU ($)', 
                 angle: -90, 
@@ -108,7 +114,9 @@ export function NBUChart() {
                 style: { fontSize: 12 }
               }}
             />
-            <Tooltip />
+            <Tooltip 
+              formatter={(value: number) => [`$${value.toLocaleString()}`, 'Valor NBU']}
+            />
             <Bar
               dataKey="value"
               fill="hsl(var(--primary))"
