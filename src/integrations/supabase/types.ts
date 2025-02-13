@@ -260,6 +260,127 @@ export type Database = {
         }
         Relationships: []
       }
+      ieasalvay_pacientes: {
+        Row: {
+          ciudad: string | null
+          codigo_postal: string | null
+          created_at: string | null
+          domicilio: string | null
+          fecha_nacimiento: string | null
+          id: string
+          id_obrasocial: number | null
+          id_paciente: string
+          nombre: string
+          provincia: string | null
+          sexo: string | null
+          telefono_1: string | null
+          telefono_2: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          ciudad?: string | null
+          codigo_postal?: string | null
+          created_at?: string | null
+          domicilio?: string | null
+          fecha_nacimiento?: string | null
+          id?: string
+          id_obrasocial?: number | null
+          id_paciente: string
+          nombre: string
+          provincia?: string | null
+          sexo?: string | null
+          telefono_1?: string | null
+          telefono_2?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          ciudad?: string | null
+          codigo_postal?: string | null
+          created_at?: string | null
+          domicilio?: string | null
+          fecha_nacimiento?: string | null
+          id?: string
+          id_obrasocial?: number | null
+          id_paciente?: string
+          nombre?: string
+          provincia?: string | null
+          sexo?: string | null
+          telefono_1?: string | null
+          telefono_2?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ieasalvay_pacientes_id_obrasocial_fkey"
+            columns: ["id_obrasocial"]
+            isOneToOne: false
+            referencedRelation: "ieasalvay_obrasocial"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ieasalvay_pacientes_protocolos: {
+        Row: {
+          created_at: string | null
+          direccion: string | null
+          dni: string
+          edad: number | null
+          email: string | null
+          fecha_nacimiento: string | null
+          id: string
+          id_paciente: string
+          localidad: string | null
+          nombre_paciente: string
+          nro_afiliado: string | null
+          obra_social: string | null
+          provincia: string | null
+          telefono: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          direccion?: string | null
+          dni: string
+          edad?: number | null
+          email?: string | null
+          fecha_nacimiento?: string | null
+          id?: string
+          id_paciente: string
+          localidad?: string | null
+          nombre_paciente: string
+          nro_afiliado?: string | null
+          obra_social?: string | null
+          provincia?: string | null
+          telefono?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          direccion?: string | null
+          dni?: string
+          edad?: number | null
+          email?: string | null
+          fecha_nacimiento?: string | null
+          id?: string
+          id_paciente?: string
+          localidad?: string | null
+          nombre_paciente?: string
+          nro_afiliado?: string | null
+          obra_social?: string | null
+          provincia?: string | null
+          telefono?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ieasalvay_pacientes_protocolos_id_paciente_fkey"
+            columns: ["id_paciente"]
+            isOneToOne: false
+            referencedRelation: "ieasalvay_pacientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ieasalvay_recesos: {
         Row: {
           comments: string | null
