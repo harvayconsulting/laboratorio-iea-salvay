@@ -19,7 +19,7 @@ export const useAuth = create<AuthState>((set) => ({
   },
 }));
 
-// Initialize auth state and set up session handling
+// Initialize auth state
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session?.user?.id) {
     const { data: userData } = await supabase
@@ -53,6 +53,15 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 // Export a function to handle sign-in
 export const signIn = async (username: string, password: string) => {
+  // First authenticate with Supabase
+  const { error: authError } = await supabase.auth.signInWithPassword({
+    email: `${username}@example.com`,
+    password: password,
+  });
+
+  if (authError) throw authError;
+
+  // After successful authentication, get the user data
   const { data: userData } = await supabase
     .from('ieasalvay_usuarios')
     .select('*')
@@ -61,17 +70,11 @@ export const signIn = async (username: string, password: string) => {
     .maybeSingle();
 
   if (userData) {
-    // Create a Supabase session
-    const { error } = await supabase.auth.signInWithPassword({
-      email: `${username}@example.com`, // Using username as email for Supabase auth
-      password: password,
-    });
-
-    if (error) throw error;
-
     useAuth.getState().setUser(userData);
     return userData;
   }
 
+  // If no user data found, sign out from Supabase
+  await supabase.auth.signOut();
   return null;
 };
