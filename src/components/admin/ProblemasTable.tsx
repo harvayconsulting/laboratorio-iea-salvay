@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { useAuth } from "@/lib/auth";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 interface Problema {
   id: string;
@@ -24,9 +27,20 @@ interface Problema {
 }
 
 export function ProblemasTable() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
   const { data: problemas, isLoading } = useQuery({
     queryKey: ["problemas"],
     queryFn: async () => {
+      if (!user) throw new Error("No authenticated user");
+
       const { data, error } = await supabase
         .from("ieasalvay_bioquimicas_problemas")
         .select(`
@@ -40,8 +54,10 @@ export function ProblemasTable() {
       if (error) throw error;
       return data as Problema[];
     },
+    enabled: !!user, // Only run query if user is authenticated
   });
 
+  if (!user) return null;
   if (isLoading) return <div>Cargando problemas...</div>;
 
   return (
