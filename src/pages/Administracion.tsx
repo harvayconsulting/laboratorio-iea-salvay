@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserList } from '@/components/admin/UserList';
 import { NewUserForm } from '@/components/admin/NewUserForm';
 import { NotificationsCard } from '@/components/admin/NotificationsCard';
+import { ProblemasForm } from '@/components/admin/ProblemasForm';
+import { ProblemasTable } from '@/components/admin/ProblemasTable';
 
 const Administracion = () => {
   const { user } = useAuth();
@@ -43,6 +45,17 @@ const Administracion = () => {
               </CardHeader>
               <CardContent>
                 <NewUserForm />
+              </CardContent>
+            </Card>
+
+            <ProblemasForm />
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Historial de Problemas</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ProblemasTable />
               </CardContent>
             </Card>
 
