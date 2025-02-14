@@ -74,7 +74,7 @@ export function ProblemasTable() {
                       ? "success"
                       : problema.estado === "pendiente"
                       ? "destructive"
-                      : "warning"
+                      : "pending"
                   }
                 >
                   {problema.estado}
