@@ -51,16 +51,23 @@ export function ProblemasForm() {
 
   const createProblema = useMutation({
     mutationFn: async (values: ProblemaFormValues) => {
+      if (!user?.user_id) {
+        throw new Error("Usuario no autenticado");
+      }
+
       const { error } = await supabase.from("ieasalvay_bioquimicas_problemas").insert([
         {
-          user_id: user?.user_id,
+          user_id: user.user_id,
           categoria: values.categoria,
           descripcion: values.descripcion,
           estado: values.estado,
         },
       ]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error creating problema:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       showToast("Éxito", "Problema registrado correctamente", "success");
@@ -78,6 +85,10 @@ export function ProblemasForm() {
   });
 
   const onSubmit = (values: ProblemaFormValues) => {
+    if (!user) {
+      showToast("Error", "Usuario no autenticado", "error");
+      return;
+    }
     createProblema.mutate(values);
   };
 
