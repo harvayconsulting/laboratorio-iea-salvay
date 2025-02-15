@@ -32,7 +32,6 @@ const problemaSchema = z.object({
   categoria: z.enum(["autorizacion", "paciente", "reactivos"]),
   descripcion: z.string().min(1, "La descripción es requerida"),
   estado: z.enum(["resuelto", "pendiente", "impacto aceptado"]),
-  biochemist_id: z.string().min(1, "La bioquímica es requerida"),
   archivos: z.any().optional(),
 });
 
@@ -44,41 +43,34 @@ export function ProblemasForm() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Fetch biochemists
-  const { data: biochemists } = useQuery({
-    queryKey: ["biochemists"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("ieasalvay_usuarios")
-        .select("*")
-        .eq("user_type", "bioquimica");
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
+  // Check authentication status
   useEffect(() => {
-    if (!user || user.user_type !== 'admin') {
+    if (!user) {
       navigate('/');
-      showToast("Error", "Acceso no autorizado", "error");
+      showToast("Error", "Debe iniciar sesión para acceder a esta página", "error");
     }
   }, [user, navigate, showToast]);
 
   const form = useForm<ProblemaFormValues>({
     resolver: zodResolver(problemaSchema),
     defaultValues: {
-      categoria: undefined,
+      categoria: "autorizacion",
       descripcion: "",
-      estado: undefined,
-      biochemist_id: undefined,
+      estado: "pendiente",
     },
   });
 
   const createProblema = useMutation({
     mutationFn: async (values: ProblemaFormValues) => {
-      if (!user?.user_id || user.user_type !== 'admin') {
-        throw new Error("Usuario no autorizado");
+      // Get the current session to ensure we're authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No hay sesión activa");
+      }
+
+      if (!user?.user_id) {
+        throw new Error("Usuario no autenticado");
       }
 
       console.log("Attempting to create problema with user_id:", user.user_id);
@@ -91,7 +83,6 @@ export function ProblemasForm() {
             categoria: values.categoria,
             descripcion: values.descripcion,
             estado: values.estado,
-            biochemist_id: values.biochemist_id,
           },
         ])
         .select();
@@ -105,12 +96,7 @@ export function ProblemasForm() {
     },
     onSuccess: () => {
       showToast("Éxito", "Problema registrado correctamente", "success");
-      form.reset({
-        categoria: undefined,
-        descripcion: "",
-        estado: undefined,
-        biochemist_id: undefined,
-      });
+      form.reset();
       queryClient.invalidateQueries({ queryKey: ["problemas"] });
     },
     onError: (error: Error) => {
@@ -124,8 +110,8 @@ export function ProblemasForm() {
   });
 
   const onSubmit = async (values: ProblemaFormValues) => {
-    if (!user || user.user_type !== 'admin') {
-      showToast("Error", "Usuario no autorizado", "error");
+    if (!user) {
+      showToast("Error", "Usuario no autenticado", "error");
       return;
     }
     
@@ -136,7 +122,7 @@ export function ProblemasForm() {
     }
   };
 
-  if (!user || user.user_type !== 'admin') {
+  if (!user) {
     return null;
   }
 
@@ -150,36 +136,11 @@ export function ProblemasForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="biochemist_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bioquímica</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccione una bioquímica" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {biochemists?.map((biochemist) => (
-                        <SelectItem key={biochemist.user_id} value={biochemist.user_id}>
-                          {biochemist.user_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="categoria"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoría del Problema</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione una categoría" />
@@ -216,7 +177,7 @@ export function ProblemasForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estado del Problema</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione un estado" />
@@ -238,7 +199,7 @@ export function ProblemasForm() {
               name="archivos"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Archivos Adjuntos (Opcional)</FormLabel>
+                  <FormLabel>Archivos Adjuntos</FormLabel>
                   <FormControl>
                     <Input type="file" multiple {...field} className="cursor-pointer" />
                   </FormControl>

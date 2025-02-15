@@ -77,7 +77,6 @@ export type Database = {
       ieasalvay_bioquimicas_problemas: {
         Row: {
           archivos_urls: string[] | null
-          biochemist_id: string | null
           categoria: string
           created_at: string | null
           descripcion: string
@@ -88,7 +87,6 @@ export type Database = {
         }
         Insert: {
           archivos_urls?: string[] | null
-          biochemist_id?: string | null
           categoria: string
           created_at?: string | null
           descripcion: string
@@ -99,7 +97,6 @@ export type Database = {
         }
         Update: {
           archivos_urls?: string[] | null
-          biochemist_id?: string | null
           categoria?: string
           created_at?: string | null
           descripcion?: string
@@ -109,13 +106,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "ieasalvay_bioquimicas_problemas_biochemist_id_fkey"
-            columns: ["biochemist_id"]
-            isOneToOne: false
-            referencedRelation: "ieasalvay_usuarios"
-            referencedColumns: ["user_id"]
-          },
           {
             foreignKeyName: "ieasalvay_bioquimicas_problemas_user_id_fkey"
             columns: ["user_id"]
