@@ -25,9 +25,8 @@ interface Problema {
   estado: string;
   created_at: string;
   archivos_urls: string[] | null;
-  biochemist: {
-    user_name: string;
-  };
+  biochemist_id: string;
+  biochemist_name?: string;
 }
 
 export function ProblemasTable() {
@@ -52,14 +51,17 @@ export function ProblemasTable() {
         .from("ieasalvay_bioquimicas_problemas")
         .select(`
           *,
-          biochemist:biochemist_id (
-            user_name
-          )
+          biochemist:ieasalvay_usuarios!ieasalvay_bioquimicas_problemas_biochemist_id_fkey(user_name)
         `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Problema[];
+
+      // Transform the data to match our interface
+      return (data as any[]).map(problema => ({
+        ...problema,
+        biochemist_name: problema.biochemist?.user_name
+      })) as Problema[];
     },
     enabled: !!user,
   });
@@ -121,7 +123,7 @@ export function ProblemasTable() {
               <TableCell>
                 {format(new Date(problema.created_at), "dd/MM/yyyy HH:mm")}
               </TableCell>
-              <TableCell>{problema.biochemist?.user_name || "No asignado"}</TableCell>
+              <TableCell>{problema.biochemist_name || "No asignado"}</TableCell>
               <TableCell>
                 <Badge variant="secondary">{problema.categoria}</Badge>
               </TableCell>
