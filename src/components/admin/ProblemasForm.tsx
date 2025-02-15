@@ -32,6 +32,7 @@ const problemaSchema = z.object({
   categoria: z.enum(["autorizacion", "paciente", "reactivos"]),
   descripcion: z.string().min(1, "La descripción es requerida"),
   estado: z.enum(["resuelto", "pendiente", "impacto aceptado"]),
+  biochemist_id: z.string().min(1, "La bioquímica es requerida"),
   archivos: z.any().optional(),
 });
 
@@ -43,7 +44,20 @@ export function ProblemasForm() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Check authentication status and admin role
+  // Fetch biochemists
+  const { data: biochemists } = useQuery({
+    queryKey: ["biochemists"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("ieasalvay_usuarios")
+        .select("*")
+        .eq("user_type", "bioquimica");
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   useEffect(() => {
     if (!user || user.user_type !== 'admin') {
       navigate('/');
@@ -54,9 +68,10 @@ export function ProblemasForm() {
   const form = useForm<ProblemaFormValues>({
     resolver: zodResolver(problemaSchema),
     defaultValues: {
-      categoria: "autorizacion",
+      categoria: undefined,
       descripcion: "",
-      estado: "pendiente",
+      estado: undefined,
+      biochemist_id: undefined,
     },
   });
 
@@ -76,6 +91,7 @@ export function ProblemasForm() {
             categoria: values.categoria,
             descripcion: values.descripcion,
             estado: values.estado,
+            biochemist_id: values.biochemist_id,
           },
         ])
         .select();
@@ -89,7 +105,12 @@ export function ProblemasForm() {
     },
     onSuccess: () => {
       showToast("Éxito", "Problema registrado correctamente", "success");
-      form.reset();
+      form.reset({
+        categoria: undefined,
+        descripcion: "",
+        estado: undefined,
+        biochemist_id: undefined,
+      });
       queryClient.invalidateQueries({ queryKey: ["problemas"] });
     },
     onError: (error: Error) => {
@@ -129,11 +150,36 @@ export function ProblemasForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              name="biochemist_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bioquímica</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione una bioquímica" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {biochemists?.map((biochemist) => (
+                        <SelectItem key={biochemist.user_id} value={biochemist.user_id}>
+                          {biochemist.user_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="categoria"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoría del Problema</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione una categoría" />
@@ -170,7 +216,7 @@ export function ProblemasForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estado del Problema</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccione un estado" />
@@ -192,7 +238,7 @@ export function ProblemasForm() {
               name="archivos"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Archivos Adjuntos</FormLabel>
+                  <FormLabel>Archivos Adjuntos (Opcional)</FormLabel>
                   <FormControl>
                     <Input type="file" multiple {...field} className="cursor-pointer" />
                   </FormControl>
