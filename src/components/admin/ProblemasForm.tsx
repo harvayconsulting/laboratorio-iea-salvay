@@ -1,4 +1,6 @@
 
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -39,6 +41,15 @@ export function ProblemasForm() {
   const { user } = useAuth();
   const { showToast } = useCustomToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  // Check authentication status
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+      showToast("Error", "Debe iniciar sesión para acceder a esta página", "error");
+    }
+  }, [user, navigate, showToast]);
 
   const form = useForm<ProblemaFormValues>({
     resolver: zodResolver(problemaSchema),
@@ -51,31 +62,45 @@ export function ProblemasForm() {
 
   const createProblema = useMutation({
     mutationFn: async (values: ProblemaFormValues) => {
+      // Get the current session to ensure we're authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("No hay sesión activa");
+      }
+
       if (!user?.user_id) {
         throw new Error("Usuario no autenticado");
       }
 
-      const { error } = await supabase.from("ieasalvay_bioquimicas_problemas").insert([
-        {
-          user_id: user.user_id,
-          categoria: values.categoria,
-          descripcion: values.descripcion,
-          estado: values.estado,
-        },
-      ]);
+      console.log("Attempting to create problema with user_id:", user.user_id);
+
+      const { data, error } = await supabase
+        .from("ieasalvay_bioquimicas_problemas")
+        .insert([
+          {
+            user_id: user.user_id,
+            categoria: values.categoria,
+            descripcion: values.descripcion,
+            estado: values.estado,
+          },
+        ])
+        .select();
 
       if (error) {
         console.error("Error creating problema:", error);
         throw error;
       }
+
+      return data;
     },
     onSuccess: () => {
       showToast("Éxito", "Problema registrado correctamente", "success");
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["problemas"] });
     },
-    onError: (error) => {
-      console.error("Error al crear problema:", error);
+    onError: (error: Error) => {
+      console.error("Error detallado al crear problema:", error);
       showToast(
         "Error",
         "No se pudo registrar el problema. Por favor, intente nuevamente.",
@@ -84,13 +109,22 @@ export function ProblemasForm() {
     },
   });
 
-  const onSubmit = (values: ProblemaFormValues) => {
+  const onSubmit = async (values: ProblemaFormValues) => {
     if (!user) {
       showToast("Error", "Usuario no autenticado", "error");
       return;
     }
-    createProblema.mutate(values);
+    
+    try {
+      await createProblema.mutateAsync(values);
+    } catch (error) {
+      console.error("Error en el submit:", error);
+    }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <Card>
