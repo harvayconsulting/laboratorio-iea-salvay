@@ -23,9 +23,9 @@ interface Problema {
   created_at: string;
   user_id: string;
   biochemist_id: string | null;
-  biochemist?: {
+  biochemist: {
     user_name: string;
-  };
+  } | null;
 }
 
 export function ProblemasTable() {
@@ -47,7 +47,7 @@ export function ProblemasTable() {
         .from("ieasalvay_bioquimicas_problemas")
         .select(`
           *,
-          biochemist:biochemist_id (
+          biochemist:ieasalvay_usuarios!ieasalvay_bioquimicas_problemas_biochemist_id_fkey (
             user_name
           )
         `)
