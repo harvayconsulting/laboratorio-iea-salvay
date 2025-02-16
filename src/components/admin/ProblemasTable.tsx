@@ -21,7 +21,9 @@ interface Problema {
   descripcion: string;
   estado: "resuelto" | "pendiente" | "impacto aceptado";
   created_at: string;
-  user: {
+  user_id: string;
+  biochemist_id: string | null;
+  biochemist?: {
     user_name: string;
   };
 }
@@ -45,7 +47,7 @@ export function ProblemasTable() {
         .from("ieasalvay_bioquimicas_problemas")
         .select(`
           *,
-          user:user_id (
+          biochemist:biochemist_id (
             user_name
           )
         `)
@@ -54,7 +56,7 @@ export function ProblemasTable() {
       if (error) throw error;
       return data as Problema[];
     },
-    enabled: !!user, // Only run query if user is authenticated
+    enabled: !!user,
   });
 
   if (!user) return null;
@@ -78,7 +80,7 @@ export function ProblemasTable() {
               <TableCell>
                 {format(new Date(problema.created_at), "dd/MM/yyyy HH:mm")}
               </TableCell>
-              <TableCell>{problema.user?.user_name}</TableCell>
+              <TableCell>{problema.biochemist?.user_name || "No asignado"}</TableCell>
               <TableCell>
                 <Badge variant="secondary">{problema.categoria}</Badge>
               </TableCell>
