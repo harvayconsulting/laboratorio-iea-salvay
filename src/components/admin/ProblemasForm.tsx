@@ -43,11 +43,11 @@ export function ProblemasForm() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Check authentication status
+  // Check authentication status and admin role
   useEffect(() => {
-    if (!user) {
+    if (!user || user.user_type !== 'admin') {
       navigate('/');
-      showToast("Error", "Debe iniciar sesión para acceder a esta página", "error");
+      showToast("Error", "Acceso no autorizado", "error");
     }
   }, [user, navigate, showToast]);
 
@@ -62,15 +62,8 @@ export function ProblemasForm() {
 
   const createProblema = useMutation({
     mutationFn: async (values: ProblemaFormValues) => {
-      // Get the current session to ensure we're authenticated
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error("No hay sesión activa");
-      }
-
-      if (!user?.user_id) {
-        throw new Error("Usuario no autenticado");
+      if (!user?.user_id || user.user_type !== 'admin') {
+        throw new Error("Usuario no autorizado");
       }
 
       console.log("Attempting to create problema with user_id:", user.user_id);
@@ -110,8 +103,8 @@ export function ProblemasForm() {
   });
 
   const onSubmit = async (values: ProblemaFormValues) => {
-    if (!user) {
-      showToast("Error", "Usuario no autenticado", "error");
+    if (!user || user.user_type !== 'admin') {
+      showToast("Error", "Usuario no autorizado", "error");
       return;
     }
     
@@ -122,7 +115,7 @@ export function ProblemasForm() {
     }
   };
 
-  if (!user) {
+  if (!user || user.user_type !== 'admin') {
     return null;
   }
 
