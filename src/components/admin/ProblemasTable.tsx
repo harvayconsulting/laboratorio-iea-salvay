@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, FileText } from "lucide-react";
 import { useCustomToast } from "@/hooks/useCustomToast";
@@ -25,9 +25,10 @@ interface Problema {
   estado: string;
   created_at: string;
   archivos_urls: string[] | null;
+  biochemist_id: string;
   biochemist: {
     user_name: string;
-  };
+  } | null;
 }
 
 export function ProblemasTable() {
@@ -35,7 +36,6 @@ export function ProblemasTable() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { showToast } = useCustomToast();
-  const [problemToDelete, setProblemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user || user.user_type !== 'admin') {
