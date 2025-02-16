@@ -21,13 +21,13 @@ export const useAuth = create<AuthState>((set) => ({
 // Initialize auth state
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session?.user?.id) {
-    const { data: userData, error } = await supabase
+    const { data: userData } = await supabase
       .from('ieasalvay_usuarios')
       .select('*')
       .eq('user_id', session.user.id)
-      .single();
+      .maybeSingle();
     
-    if (userData && !error) {
+    if (userData) {
       useAuth.getState().setUser(userData);
     }
   }
@@ -36,13 +36,13 @@ supabase.auth.getSession().then(async ({ data: { session } }) => {
 // Listen for auth changes
 supabase.auth.onAuthStateChange(async (event, session) => {
   if (event === 'SIGNED_IN' && session?.user?.id) {
-    const { data: userData, error } = await supabase
+    const { data: userData } = await supabase
       .from('ieasalvay_usuarios')
       .select('*')
       .eq('user_id', session.user.id)
-      .single();
+      .maybeSingle();
     
-    if (userData && !error) {
+    if (userData) {
       useAuth.getState().setUser(userData);
     }
   } else if (event === 'SIGNED_OUT') {
@@ -59,7 +59,7 @@ export const signIn = async (username: string, password: string) => {
       .select('*')
       .eq('user_name', username)
       .eq('password', password)
-      .single();
+      .maybeSingle();
 
     if (userError || !userData) {
       throw new Error('Invalid credentials');
