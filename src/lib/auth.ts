@@ -53,25 +53,24 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 // Export a function to handle sign-in
 export const signIn = async (username: string, password: string) => {
   try {
-    // First check if user exists in our custom users table
-    const { data: userData, error: userError } = await supabase
-      .from('ieasalvay_usuarios')
-      .select('*')
-      .eq('user_name', username)
-      .eq('password', password)
-      .maybeSingle();
-
-    if (userError || !userData) {
-      throw new Error('Invalid credentials');
-    }
-
-    // If user exists, proceed with Supabase authentication
+    // First authenticate with Supabase
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: `${username}@example.com`,
       password: password,
     });
 
     if (authError) throw authError;
+
+    // After successful authentication, get the user data
+    const { data: userData, error: userError } = await supabase
+      .from('ieasalvay_usuarios')
+      .select('*')
+      .eq('user_name', username)
+      .maybeSingle();
+
+    if (userError || !userData) {
+      throw new Error('Invalid credentials');
+    }
 
     useAuth.getState().setUser(userData);
     return userData;
