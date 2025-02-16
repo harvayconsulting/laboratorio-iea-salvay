@@ -12,6 +12,7 @@ export const useAuth = create<AuthState>((set) => ({
   user: null,
   setUser: (user) => {
     set({ user });
+    // If user is null, sign out from Supabase
     if (!user) {
       supabase.auth.signOut();
     }
@@ -52,30 +53,28 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 // Export a function to handle sign-in
 export const signIn = async (username: string, password: string) => {
-  try {
-    // First authenticate with Supabase
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: `${username}@example.com`,
-      password: password,
-    });
+  // First authenticate with Supabase
+  const { error: authError } = await supabase.auth.signInWithPassword({
+    email: `${username}@example.com`,
+    password: password,
+  });
 
-    if (authError) throw authError;
+  if (authError) throw authError;
 
-    // After successful authentication, get the user data
-    const { data: userData, error: userError } = await supabase
-      .from('ieasalvay_usuarios')
-      .select('*')
-      .eq('user_name', username)
-      .maybeSingle();
+  // After successful authentication, get the user data
+  const { data: userData } = await supabase
+    .from('ieasalvay_usuarios')
+    .select('*')
+    .eq('user_name', username)
+    .eq('password', password)
+    .maybeSingle();
 
-    if (userError || !userData) {
-      throw new Error('Invalid credentials');
-    }
-
+  if (userData) {
     useAuth.getState().setUser(userData);
     return userData;
-  } catch (error) {
-    console.error('Sign in error:', error);
-    throw error;
   }
+
+  // If no user data found, sign out from Supabase
+  await supabase.auth.signOut();
+  return null;
 };
