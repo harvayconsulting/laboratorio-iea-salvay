@@ -81,20 +81,24 @@ export function ProblemasForm() {
         throw new Error("Usuario no autorizado");
       }
 
-      console.log("Attempting to create problema with user_id:", user.user_id);
+      // First, validate we have all required data
+      if (!values.categoria || !values.descripcion || !values.estado || !values.biochemist_id) {
+        throw new Error("Faltan campos requeridos");
+      }
 
       const { data, error } = await supabase
         .from("ieasalvay_bioquimicas_problemas")
-        .insert([
-          {
-            user_id: user.user_id, // Importante: Asegurarnos de incluir el user_id
-            categoria: values.categoria,
-            descripcion: values.descripcion,
-            estado: values.estado,
-            biochemist_id: values.biochemist_id,
-          },
-        ])
-        .select();
+        .insert({
+          user_id: user.user_id,
+          categoria: values.categoria,
+          descripcion: values.descripcion,
+          estado: values.estado,
+          biochemist_id: values.biochemist_id,
+          created_at: new Date().toISOString(), // Explicitly set creation date
+          updated_at: new Date().toISOString(),  // Explicitly set update date
+        })
+        .select('*')
+        .single();
 
       if (error) {
         console.error("Error creating problema:", error);
@@ -117,7 +121,7 @@ export function ProblemasForm() {
       console.error("Error detallado al crear problema:", error);
       showToast(
         "Error",
-        "No se pudo registrar el problema. Por favor, intente nuevamente.",
+        "No se pudo registrar el problema. Por favor, intente nuevamente y asegúrese de estar autenticado.",
         "error"
       );
     },
