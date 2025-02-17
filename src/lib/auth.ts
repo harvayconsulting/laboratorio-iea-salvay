@@ -22,14 +22,23 @@ export const useAuth = create<AuthState>((set) => ({
 // Initialize auth state
 supabase.auth.getSession().then(async ({ data: { session } }) => {
   if (session?.user?.id) {
-    const { data: userData } = await supabase
-      .from('ieasalvay_usuarios')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .maybeSingle();
+    try {
+      const { data: userData, error } = await supabase
+        .from('ieasalvay_usuarios')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching user data:', error);
+        return;
+      }
     
-    if (userData) {
-      useAuth.getState().setUser(userData);
+      if (userData) {
+        useAuth.getState().setUser(userData);
+      }
+    } catch (error) {
+      console.error('Error in auth initialization:', error);
     }
   }
 });
@@ -37,14 +46,23 @@ supabase.auth.getSession().then(async ({ data: { session } }) => {
 // Listen for auth changes
 supabase.auth.onAuthStateChange(async (event, session) => {
   if (event === 'SIGNED_IN' && session?.user?.id) {
-    const { data: userData } = await supabase
-      .from('ieasalvay_usuarios')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .maybeSingle();
+    try {
+      const { data: userData, error } = await supabase
+        .from('ieasalvay_usuarios')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error fetching user data:', error);
+        return;
+      }
     
-    if (userData) {
-      useAuth.getState().setUser(userData);
+      if (userData) {
+        useAuth.getState().setUser(userData);
+      }
+    } catch (error) {
+      console.error('Error in auth state change:', error);
     }
   } else if (event === 'SIGNED_OUT') {
     useAuth.getState().setUser(null);
@@ -53,28 +71,35 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 
 // Export a function to handle sign-in
 export const signIn = async (username: string, password: string) => {
-  // First authenticate with Supabase
-  const { error: authError } = await supabase.auth.signInWithPassword({
-    email: `${username}@example.com`,
-    password: password,
-  });
+  try {
+    // First authenticate with Supabase
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: `${username}@example.com`,
+      password: password,
+    });
 
-  if (authError) throw authError;
+    if (authError) throw authError;
 
-  // After successful authentication, get the user data
-  const { data: userData } = await supabase
-    .from('ieasalvay_usuarios')
-    .select('*')
-    .eq('user_name', username)
-    .eq('password', password)
-    .maybeSingle();
+    // After successful authentication, get the user data
+    const { data: userData, error: userError } = await supabase
+      .from('ieasalvay_usuarios')
+      .select('*')
+      .eq('user_name', username)
+      .eq('password', password)
+      .maybeSingle();
 
-  if (userData) {
-    useAuth.getState().setUser(userData);
-    return userData;
+    if (userError) throw userError;
+
+    if (userData) {
+      useAuth.getState().setUser(userData);
+      return userData;
+    }
+
+    // If no user data found, sign out from Supabase
+    await supabase.auth.signOut();
+    return null;
+  } catch (error) {
+    console.error('Error in signIn:', error);
+    throw error;
   }
-
-  // If no user data found, sign out from Supabase
-  await supabase.auth.signOut();
-  return null;
 };
