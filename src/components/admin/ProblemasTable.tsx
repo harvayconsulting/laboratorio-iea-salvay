@@ -58,7 +58,7 @@ export function ProblemasTable() {
           created_at,
           archivos_urls,
           biochemist_id,
-          biochemist:biochemist_id (
+          biochemist:ieasalvay_usuarios (
             user_name
           )
         `)
@@ -113,7 +113,10 @@ export function ProblemasTable() {
 
   if (!user || user.user_type !== 'admin') return null;
   if (isLoading) return <div>Cargando problemas...</div>;
-  if (error) return <div>Error al cargar los problemas</div>;
+  if (error) {
+    console.error("Error loading problemas:", error);
+    return <div>Error al cargar los problemas: {error.message}</div>;
+  }
 
   return (
     <div className="rounded-md border">
