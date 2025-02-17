@@ -43,7 +43,7 @@ export function ProblemasTable() {
     }
   }, [user, navigate]);
 
-  const { data: problemas, isLoading } = useQuery({
+  const { data: problemas, isLoading, error } = useQuery({
     queryKey: ["problemas"],
     queryFn: async () => {
       if (!user) throw new Error("No authenticated user");
@@ -51,7 +51,13 @@ export function ProblemasTable() {
       const { data: problemasData, error } = await supabase
         .from("ieasalvay_bioquimicas_problemas")
         .select(`
-          *,
+          id,
+          categoria,
+          descripcion,
+          estado,
+          created_at,
+          archivos_urls,
+          biochemist_id,
           biochemist:biochemist_id (
             user_name
           )
@@ -63,13 +69,12 @@ export function ProblemasTable() {
         throw error;
       }
 
-      // Ensure the data matches our Problema interface
       return (problemasData || []).map(problema => ({
         ...problema,
         biochemist: problema.biochemist || null
       })) as Problema[];
     },
-    enabled: !!user,
+    enabled: !!user && user.user_type === 'admin',
   });
 
   const deleteProblema = useMutation({
@@ -108,6 +113,7 @@ export function ProblemasTable() {
 
   if (!user || user.user_type !== 'admin') return null;
   if (isLoading) return <div>Cargando problemas...</div>;
+  if (error) return <div>Error al cargar los problemas</div>;
 
   return (
     <div className="rounded-md border">
