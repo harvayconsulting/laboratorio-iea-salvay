@@ -48,7 +48,7 @@ export function ProblemasTable() {
     queryFn: async () => {
       if (!user) throw new Error("No authenticated user");
 
-      const { data, error } = await supabase
+      const { data: problemasData, error } = await supabase
         .from("ieasalvay_bioquimicas_problemas")
         .select(`
           *,
@@ -58,8 +58,16 @@ export function ProblemasTable() {
         `)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data as Problema[];
+      if (error) {
+        console.error("Error fetching problemas:", error);
+        throw error;
+      }
+
+      // Ensure the data matches our Problema interface
+      return (problemasData || []).map(problema => ({
+        ...problema,
+        biochemist: problema.biochemist || null
+      })) as Problema[];
     },
     enabled: !!user,
   });

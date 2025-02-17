@@ -116,13 +116,6 @@ export type Database = {
             referencedRelation: "ieasalvay_usuarios"
             referencedColumns: ["user_id"]
           },
-          {
-            foreignKeyName: "ieasalvay_bioquimicas_problemas_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "ieasalvay_usuarios"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       ieasalvay_capacitaciones: {
