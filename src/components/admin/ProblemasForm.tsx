@@ -87,7 +87,7 @@ export function ProblemasForm() {
         .from("ieasalvay_bioquimicas_problemas")
         .insert([
           {
-            user_id: user.user_id,
+            user_id: user.user_id, // Importante: Asegurarnos de incluir el user_id
             categoria: values.categoria,
             descripcion: values.descripcion,
             estado: values.estado,
